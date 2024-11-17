@@ -6,7 +6,7 @@ from lxml.builder import unicode
 from py_asciimath.translator.translator import Tex2ASCIIMath
 
 
-class Converter(Tex2ASCIIMath):
+class Converter(Tex2ASCIIMath): # inherit from Tex2ASCIIMath
     def __init__(self):
         super().__init__()
 
