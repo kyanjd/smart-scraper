@@ -96,7 +96,7 @@ class Scraper:
         # extracts variable/value pairs from tables in the bs4 object and stores them in the info dictionary
         tables = self.soup.find_all('table')
         for table in tables:
-            print(table)
+            #print(table)
             variables = [variable.contents for variable in table.thead.tr.find_all('th') if variable.contents]
             values = []
             trs = table.tbody.find_all('tr')
@@ -232,10 +232,10 @@ class Scraper:
     def _generate_txt(self):
         # generates a text file with the scraped information stored in the info dict
         paper_id = self.url.split('/')[-1]
-        if not os.path.exists('scraped_txt'):
-            os.mkdir('scraped_txt')
+        if not os.path.exists('StemBot Source Code - Vincent\scraped_txt'):
+            os.mkdir('StemBot Source Code - Vincent\scraped_txt')
 
-        with open('scraped_txt\\{}.txt'.format(paper_id), 'w', encoding='utf-8') as f:
+        with open('StemBot Source Code - Vincent\scraped_txt\\{}.txt'.format(paper_id), 'w', encoding='utf-8') as f:
             f.write('Title: {}\n'.format(self.get_title()))
             f.write('Authors: {}\n'.format(', '.join(self.get_authors())))
             f.write('URL: {}\n'.format(self.url))
@@ -260,15 +260,15 @@ class Scraper:
     def _generate_python(self):
         # create a Python script according to a template and fill in equation parameters and Python equations from the info dict
         paper_id = self.url.split('/')[-1]
-        if not os.path.exists('scraped_python'):
-            os.mkdir('scraped_python')
+        if not os.path.exists('StemBot Source Code - Vincent\scraped_python'):
+            os.mkdir('StemBot Source Code - Vincent\scraped_python')
 
         file_data = []
-        with open('template.py', 'r', encoding='utf-8') as f:
+        with open('StemBot Source Code - Vincent\template.py', 'r', encoding='utf-8') as f:
             for line in f.readlines():
                 file_data.append(line)
 
-        with open('scraped_python\\{}.py'.format(paper_id), 'w', encoding='utf-8') as f:
+        with open('StemBot Source Code - Vincent\scraped_python\\{}.py'.format(paper_id), 'w', encoding='utf-8') as f:
             for line in file_data:
                 # print(repr(line))
                 f.write(line)
@@ -315,10 +315,10 @@ class Scraper:
     def _generate_python_test(self):
         # generates a Python script for testing the equations according to a template
         paper_id = self.url.split('/')[-1]
-        if not os.path.exists('scraped_python'):
-            os.mkdir('scraped_python')
+        if not os.path.exists('StemBot Source Code - Vincent\scraped_python'):
+            os.mkdir('StemBot Source Code - Vincent\scraped_python')
 
-        with open('scraped_python\\{}_test.py'.format(paper_id), 'w', encoding='utf-8') as f:
+        with open('StemBot Source Code - Vincent\scraped_python\\{}_test.py'.format(paper_id), 'w', encoding='utf-8') as f:
                 # import libraries
                 f.write('import numpy as np\n')
                 f.write('from sympy import Symbol, Eq, solve\n')
@@ -386,7 +386,7 @@ class Scraper:
 # print(scraper.get_python_exprs())
 
 
-with open('paper_url.txt', 'r', encoding='utf-8') as f:
+with open('StemBot Source Code - Vincent\paper_url.txt', 'r', encoding='utf-8') as f:
     urls = f.readlines()
     for url in urls:
         print(url.strip('\n'))
