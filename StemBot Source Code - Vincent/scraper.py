@@ -15,6 +15,7 @@ from converter import Converter
 
 class Scraper:
     def __init__(self, url, usr_data_dir='C:\\Users\\kyanj\\AppData\\Local\\Google\\Chrome\\User Data'):
+        # initialise the Scraper class with the url and the user data directory, adding paper information to the info dictionary
         self.url = url
         self.usr_data_dir = usr_data_dir
         self.soup = None
@@ -33,6 +34,7 @@ class Scraper:
 
 
     def _is_expr(self, expr):
+        # check to determine if expr is a mathematical expression by searching for mathematical symbols (also in LaTeX)
         signs = ['=', '<', '>', '≠', '≤', '≥', r'\le ', r'\leq ', r'\leqq ', r'\leqslant ', r'\ge ', r'\geq ', r'\geqq ', r'\geqslant ']
         for sign in signs:
             if sign in expr:
@@ -42,6 +44,7 @@ class Scraper:
 
 
     def parse(self):
+        # loads a specific web page, scrapes HTML and stores it in a beautiful soup object
         service = Service(executable_path=ChromeDriverManager().install())
 
         # Load default profile
@@ -66,6 +69,7 @@ class Scraper:
 
 
     def _scrape_title(self):
+        # extracts title from the bs4 object and stores it in the info dictionary
         if not self.soup:
             raise NameError('The url is not parsed.')
 
@@ -73,6 +77,7 @@ class Scraper:
 
 
     def _scrape_authors(self):
+        # extracts authors from the bs4 object and stores them in the info dictionary
         if not self.soup:
             raise NameError('The url is not parsed.')
 
@@ -88,6 +93,7 @@ class Scraper:
 
 
     def _scrape_table(self):
+        # extracts variable/value pairs from tables in the bs4 object and stores them in the info dictionary
         tables = self.soup.find_all('table')
         for table in tables:
             print(table)
@@ -161,6 +167,8 @@ class Scraper:
 
 
     def _scrape_exprs(self):
+        # Extracts MathML expressions from HTML, converts them to TeX, ASCII Math, and Python expressions using the converter class, and stores them for further use.
+
         if not self.soup:
             raise NameError('The url is not parsed.')
 
@@ -192,7 +200,7 @@ class Scraper:
             self.info['ascii_exprs'] = None
             self.info['python_exprs'] = None
 
-
+    # getter functions to abstract access to the info attribute
     def get_title(self):
         return self.info['title']
 
@@ -222,6 +230,7 @@ class Scraper:
 
 
     def _generate_txt(self):
+        # generates a text file with the scraped information stored in the info dict
         paper_id = self.url.split('/')[-1]
         if not os.path.exists('scraped_txt'):
             os.mkdir('scraped_txt')
@@ -249,6 +258,7 @@ class Scraper:
 
 
     def _generate_python(self):
+        # create a Python script according to a template and fill in equation parameters and Python equations from the info dict
         paper_id = self.url.split('/')[-1]
         if not os.path.exists('scraped_python'):
             os.mkdir('scraped_python')
@@ -303,6 +313,7 @@ class Scraper:
 
 
     def _generate_python_test(self):
+        # generates a Python script for testing the equations according to a template
         paper_id = self.url.split('/')[-1]
         if not os.path.exists('scraped_python'):
             os.mkdir('scraped_python')
@@ -343,6 +354,7 @@ class Scraper:
 
 
     def scrape(self):
+        # pseudo main for the Scraper class
         self._scrape_table()
         self._scrape_title()
         self._scrape_authors()
