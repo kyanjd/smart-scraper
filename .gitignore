@@ -1,0 +1,8 @@
+# Ignore virtual environment directories
+**/venv/
+**/.venv/
+**/envs/
+**/.env/
+
+# Ignore Anaconda environments globally (if necessary)
+/Users/kyanj/anaconda3/envs/*
