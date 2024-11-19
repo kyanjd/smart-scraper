@@ -49,7 +49,7 @@ class Scraper:
 
         # Load default profile
         options = webdriver.ChromeOptions()
-        options.add_argument('user-data-dir={}'.format(self.usr_data_dir))
+        #options.add_argument('user-data-dir={}'.format(self.usr_data_dir))
 
         driver = webdriver.Chrome(service=service, options=options)
         driver.get(self.url)
@@ -66,6 +66,7 @@ class Scraper:
         driver.quit()
 
         self.soup = bs4.BeautifulSoup(source, "html.parser")
+        with open
 
 
     def _scrape_title(self):
@@ -95,6 +96,7 @@ class Scraper:
     def _scrape_table(self):
         # extracts variable/value pairs from tables in the bs4 object and stores them in the info dictionary
         tables = self.soup.find_all('table')
+        print(tables)
         for table in tables:
             #print(table)
             variables = [variable.contents for variable in table.thead.tr.find_all('th') if variable.contents]
