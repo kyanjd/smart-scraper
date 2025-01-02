@@ -5,6 +5,7 @@ import random
 from IPython.display import Markdown
 from lxml import etree
 import json
+from IPython.display import display
 
 class Equation:
     def __init__(self):
@@ -128,17 +129,18 @@ class BaseDataset:
             json.dump(existing_data, f, ensure_ascii=False, indent=4)
 
     def create_csv(self):
+        columns = self.get_columns()
         try: # Check to see if there is already data at the filepath
             existing_data = pd.read_csv(self.filepath) # Load it if it exists
         except FileNotFoundError:
-            existing_data = pd.DataFrame(columns=["text_input", "output"]) # Create an empty df otherwise
+            existing_data = pd.DataFrame(columns=columns) # Create an empty df otherwise
 
         new_data = []
         while len(new_data) < self.num: # Add num new equations to the list in dictionary format
             eg = Equation()
             try: # Skip errors
                 py, mml = eg.generate()
-                new_data.append({"text_input": mml, "output": py}) # Format here
+                new_data.append({columns[0]: mml, columns[1]: py}) # Format here
             except:
                 continue
             print(f"Number of new equations: {len(new_data)} / {self.num}")
