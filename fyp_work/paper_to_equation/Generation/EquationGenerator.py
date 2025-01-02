@@ -1,8 +1,6 @@
 import pandas as pd
-import numpy as np
 import sympy as sp
 from sympy import *
-import matplotlib.pyplot as plt
 import random
 from IPython.display import Markdown
 from lxml import etree

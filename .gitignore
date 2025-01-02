@@ -6,3 +6,9 @@
 
 # Ignore Anaconda environments globally (if necessary)
 /Users/kyanj/anaconda3/envs/*
+
+# Ignore .env files (used for local environment variables)
+.env
+
+# Ignore VSCode settings folder
+.vscode/
