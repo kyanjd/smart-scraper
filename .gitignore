@@ -12,3 +12,6 @@
 
 # Ignore VSCode settings folder
 .vscode/
+
+# Ignore training checkpoints 
+fyp_work/paper_to_equation/T5/t5-base-mathml-to-python/
