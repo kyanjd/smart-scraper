@@ -6,3 +6,17 @@
 
 # Ignore Anaconda environments globally (if necessary)
 /Users/kyanj/anaconda3/envs/*
+
+# Ignore .env files (used for local environment variables)
+.env
+
+# Ignore VSCode settings folder
+.vscode/
+
+# Ignore training checkpoints 
+fyp_work/paper_to_equation/T5/t5-base-mathml-to-python/
+
+# Ignore cache
+__pycache__/
+*.pyc
+*.pyo

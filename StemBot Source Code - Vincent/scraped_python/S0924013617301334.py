@@ -108,7 +108,7 @@ delta = 1.5e-5
 
 colomn_name = ['P', 'h']
 # df = pd.read_csv('figures\\cast_iron.csv', header=None, names=colomn_name)
-df = pd.read_csv('figures\\p20.csv', header=None, names=colomn_name)
+df = pd.read_csv(r'StemBot Source Code - Vincent\scraped_python\figures\p20.csv', header=None, names=colomn_name)
 P_list = pd.to_numeric(df['P']).tolist()
 h_list_paper = pd.to_numeric(df['h']).tolist()
 h_list = []
