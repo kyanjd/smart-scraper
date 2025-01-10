@@ -6,6 +6,7 @@ from IPython.display import Markdown
 from lxml import etree
 import json
 from IPython.display import display
+from tqdm import tqdm
 
 class Equation:
     def __init__(self):
@@ -112,16 +113,19 @@ class BaseDataset:
 
         new_data = []
         columns = self.get_columns()
-        while len(new_data) < self.num: # Add num new equations to the list in dictionary format
-            eg = Equation()
-            try: # Skip errors
-                py, mml = eg.generate()
-                mml.replace("\n", "\\n")
-                py.replace("\n", "\\n")
-                new_data.append({columns[0]: mml, columns[1]: py}) # Format here
-            except:
-                continue
-            print(f"Number of new equations: {len(new_data)} / {self.num}")
+        with tqdm(desc="Generating dataset") as pbar:
+            while len(new_data) < self.num: # Add num new equations to the list in dictionary format
+                eg = Equation()
+                try: # Skip errors
+                    py, mml = eg.generate()
+                    mml.replace("\n", "\\n")
+                    py.replace("\n", "\\n")
+                    new_data.append({columns[0]: mml, columns[1]: py}) # Format here
+                    pbar.total = self.num
+                    pbar.update(1)
+                except:
+                    continue
+            
 
         
         existing_data.extend(new_data)
@@ -136,14 +140,16 @@ class BaseDataset:
             existing_data = pd.DataFrame(columns=columns) # Create an empty df otherwise
 
         new_data = []
-        while len(new_data) < self.num: # Add num new equations to the list in dictionary format
-            eg = Equation()
-            try: # Skip errors
-                py, mml = eg.generate()
-                new_data.append({columns[0]: mml, columns[1]: py}) # Format here
-            except:
-                continue
-            print(f"Number of new equations: {len(new_data)} / {self.num}")
+        with tqdm(desc="Generating dataset") as pbar:
+            while len(new_data) < self.num: # Add num new equations to the list in dictionary format
+                eg = Equation()
+                try: # Skip errors
+                    py, mml = eg.generate()
+                    new_data.append({columns[0]: mml, columns[1]: py}) # Format here
+                    pbar.total = self.num
+                    pbar.update(1)
+                except:
+                    continue
         
         new_data = pd.DataFrame(new_data)
         existing_data = pd.concat([existing_data, new_data])
