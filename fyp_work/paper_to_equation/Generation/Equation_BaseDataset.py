@@ -9,16 +9,25 @@ from IPython.display import display
 from tqdm import tqdm
 
 class Equation:
-    def __init__(self):
-        self.latin = symbols('a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z')
-        self.greek = symbols('α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω')
-        self.vars = self.latin + self.greek 
-        self.operators = ('+', '-', '*', '/', '**')
-        self.functions = (sin, cos, tan, exp, log, sqrt)
-        self.nums = tuple(range(1, 10))
+    # Class attributes (only instantiated the first time)
+    latin = symbols('a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z')
+    greek = symbols('α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω')
+    vars = latin + greek 
+    operators = ('+', '-', '*', '/', '**')
+    functions = (sin, cos, tan, exp, log, sqrt)
+    nums = tuple(range(1, 10))
 
-        self.get_combined_vars(52) # 52 to roughly match the number of latin and greek letters for equal probability of choice
+    def __init__(self, n=52):
+        self.get_combined_vars(n) # 52 to roughly match the number of latin and greek letters for equal probability of choice
         self.vars += self.combined_vars # Add the combined variables to the list of variables
+
+    def get_combined_vars(self, num):
+        combined_vars = []
+        for _ in range(num): # Create num combined variables by joining two random variables with a "_"
+            part1 = random.choice(self.vars)
+            part2 = random.choice(self.vars + self.nums)
+            combined_vars.append(f"{part1}_{part2}")
+        self.combined_vars = symbols(" ".join(combined_vars)) # Convert the list of combined variables to a tuple of SymPy symbols
 
     def generate_expression(self):            
         complexity1 = random.randint(1, 2) # Length of expression
@@ -39,14 +48,6 @@ class Equation:
             expression = f"{expression} {operator} {term}" # Concatenate the expression with the operator and term
         # print(expression)
         return sympify(expression)
-    
-    def get_combined_vars(self, num):
-        combined_vars = []
-        for _ in range(num): # Create num combined variables by joining two random variables with a "_"
-            part1 = random.choice(self.vars)
-            part2 = random.choice(self.vars + self.nums)
-            combined_vars.append(f"{part1}_{part2}")
-        self.combined_vars = symbols(" ".join(combined_vars)) # Convert the list of combined variables to a tuple of SymPy symbols
     
     def generate_equation(self):
         lhs = self.generate_expression()
@@ -162,3 +163,14 @@ class BaseDataset:
             self.create_csv()
         else:
             print("Invalid file format. Please use .json or .csv")
+
+class TestDataset(BaseDataset):
+    def get_columns(self):
+        return ["test1", "test2"]
+    
+def main():
+    dataset = TestDataset(100, "test.csv")
+    dataset.create()
+
+if __name__ == "__main__":
+    main()
