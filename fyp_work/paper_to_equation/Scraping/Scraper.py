@@ -44,7 +44,6 @@ class Scraper:
         self.make_soup()
         self.find_equations()
 
-
 def main():
     doi = "10.1016/j.jmatprotec.2017.04.005"
     api_key = os.getenv("ELSEVIER_API_KEY")
