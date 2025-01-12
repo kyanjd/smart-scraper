@@ -7,6 +7,7 @@ from lxml import etree
 import json
 from IPython.display import display
 from tqdm import tqdm
+import re
 
 class Equation:
     # Class attributes (only instantiated the first time)
@@ -29,8 +30,8 @@ class Equation:
             part3 = random.choice(self.vars + self.nums)
             part4 = random.choice(self.vars + self.nums)
             cv1 = f"{part1}_{part2}"
-            cv2 = f"{part1}_{part2}{part3}"
-            cv3 = f"{part1}_{part2}{part3}{part4}"
+            cv2 = f"{part1}_{part2}_{part3}"
+            cv3 = f"{part1}_{part2}_{part3}_{part4}"
             combined_vars.append(random.choice([cv1, cv2, cv3]))
         self.combined_vars = symbols(" ".join(combined_vars)) # Convert the list of combined variables to a tuple of SymPy symbols
 
@@ -120,33 +121,33 @@ class BaseDataset:
     def __init__(self, num, filepath):
         self.num = num
         self.filepath = filepath
+        self.dataset = []
     
     def get_columns(self):
         raise NotImplementedError("Subclasses must implement this method")
     
     def create_json(self):
+        columns = self.get_columns()
         try: # Check to see if there is already data at the filepath
             with open(self.filepath, "r") as f:
                 existing_data = json.load(f) # Load it if it exists
         except FileNotFoundError:
             existing_data = [] # Create an empty list otherwise
 
-        new_data = []
-        columns = self.get_columns()
         with tqdm(desc="Generating dataset") as pbar:
-            while len(new_data) < self.num: # Add num new equations to the list in dictionary format
+            while len(self.dataset) < self.num: # Add num new equations to the list in dictionary format
                 eg = Equation()
                 try: # Skip errors
                     py, mml = eg.generate()
                     mml.replace("\n", "\\n")
                     py.replace("\n", "\\n")
-                    new_data.append({columns[0]: mml, columns[1]: py}) # Format here
+                    self.dataset.append({columns[0]: mml, columns[1]: py}) # Format here
                     pbar.total = self.num
                     pbar.update(1)
                 except:
                     continue        
                 
-        existing_data.extend(new_data)
+        existing_data.extend(self.dataset)
         with open(self.filepath, "w", encoding="utf-8") as f:
             json.dump(existing_data, f, ensure_ascii=False, indent=4)
 
@@ -157,19 +158,18 @@ class BaseDataset:
         except FileNotFoundError:
             existing_data = pd.DataFrame(columns=columns) # Create an empty df otherwise
 
-        new_data = []
         with tqdm(desc="Generating dataset") as pbar:
-            while len(new_data) < self.num: # Add num new equations to the list in dictionary format
+            while len(self.dataset) < self.num: # Add num new equations to the list in dictionary format
                 eg = Equation()
                 try: # Skip errors
                     py, mml = eg.generate()
-                    new_data.append({columns[0]: mml, columns[1]: py}) # Format here
+                    self.dataset.append({columns[0]: mml, columns[1]: py}) # Format here
                     pbar.total = self.num
                     pbar.update(1)
                 except:
                     continue
         
-        new_data = pd.DataFrame(new_data)
+        new_data = pd.DataFrame(self.dataset)
         existing_data = pd.concat([existing_data, new_data])
         existing_data.to_csv(self.filepath, index=False)
 
@@ -182,12 +182,21 @@ class BaseDataset:
             print("Invalid file format. Please use .json or .csv")
 
 class TestDataset(BaseDataset):
+    def __init__(self, num, filepath):
+        super().__init__(num, filepath)
     def get_columns(self):
         return ["test1", "test2"]
     
 def main():
-    dataset = TestDataset(100, "test.csv")
+    dataset = TestDataset(10, "test.csv")
     dataset.create()
+    print(len(dataset.dataset))
+
+def test():
+    eq = Equation()
+    py, mml = eq.generate()
+    print(py)
+
 
 if __name__ == "__main__":
     main()
