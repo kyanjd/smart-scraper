@@ -26,7 +26,12 @@ class Equation:
         for _ in range(num): # Create num combined variables by joining two random variables with a "_"
             part1 = random.choice(self.vars)
             part2 = random.choice(self.vars + self.nums)
-            combined_vars.append(f"{part1}_{part2}")
+            part3 = random.choice(self.vars + self.nums)
+            part4 = random.choice(self.vars + self.nums)
+            cv1 = f"{part1}_{part2}"
+            cv2 = f"{part1}_{part2}{part3}"
+            cv3 = f"{part1}_{part2}{part3}{part4}"
+            combined_vars.append(random.choice([cv1, cv2, cv3]))
         self.combined_vars = symbols(" ".join(combined_vars)) # Convert the list of combined variables to a tuple of SymPy symbols
 
     def generate_expression(self):            
@@ -46,7 +51,6 @@ class Equation:
                 inner_operator = random.choice(self.operators)
                 term = f"{func.__name__}({inner1} {inner_operator} {inner2})" # e.g. sin(a + b), log(c * d)   
             expression = f"{expression} {operator} {term}" # Concatenate the expression with the operator and term
-        # print(expression)
         return sympify(expression)
     
     def generate_equation(self):
@@ -56,6 +60,19 @@ class Equation:
     
     def to_python(self):
         self.py = sp.printing.python(self.equation) # Convert the SymPy expression to Python code
+
+    def format_python(self):
+        py = self.py
+        for line in py.splitlines():
+            symbol = line.split(" = ")[0]
+            if symbol == "e": # Ignore the equation line
+                continue
+            parts = symbol.split('_')  # Split by underscore
+            if len(parts) > 2:  # Ensure there are multiple parts to process
+                new_symbol =  parts[0] + '_' + ''.join(parts[1:])
+                py = py.replace(symbol, new_symbol)  
+        
+        self.py = py # Update attribute
     
     def to_mathml(self):
         self.mml = sp.printing.mathml(self.equation, printer='presentation') # Convert the SymPy expression to MathML in the correct style
@@ -80,6 +97,7 @@ class Equation:
         mml = '\n'.join([line.lstrip() for line in mml.splitlines()]) # Remove leading whitespace from each line
         mml = mml.replace("ns0", "mml") # Replace the namespace prefix with "mml" to match scraped MathML
         mml = mml.replace('<mml:mrow xmlns:mml="http://www.w3.org/1998/Math/MathML">', "") # Remove first tag
+        mml = re.sub(r"<mml:mo> </mml:mo>\s*\n", "", mml) # Remove empty <mo> tags and get rid of the empty line left behind
         
         index = mml.rfind("</mml:mrow>") # Logic to remove final mrow tag
         if index != -1:
@@ -93,6 +111,7 @@ class Equation:
     def generate(self):
         self.generate_equation()
         self.to_python()
+        self.format_python()
         self.to_mathml()
         self.format_mathml()
         return self.py, self.mml
@@ -125,10 +144,8 @@ class BaseDataset:
                     pbar.total = self.num
                     pbar.update(1)
                 except:
-                    continue
-            
-
-        
+                    continue        
+                
         existing_data.extend(new_data)
         with open(self.filepath, "w", encoding="utf-8") as f:
             json.dump(existing_data, f, ensure_ascii=False, indent=4)
