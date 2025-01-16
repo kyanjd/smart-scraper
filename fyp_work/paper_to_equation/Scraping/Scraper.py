@@ -30,14 +30,18 @@ class Scraper:
             mathml = mathml.contents[1] # Remove \n from beginning and end along with outer tags
             self.mathml_dict[index] = mathml 
     
-    def create_mathml_txt(self, filename):
+    def create_mathml_txt(self, file):
         mmld = self.mathml_dict
-        with open(f"{filename}.txt", "w", encoding="utf-8") as f:
+
+        if not file.endswith(".txt"):
+            raise Exception("File must be a .txt file")
+        
+        with open(f"{file}", "w", encoding="utf-8") as f:
             for i in range(1, len(mmld) + 1):
                 mathml = str(mmld[i]) # Get string representation of MathML
                 self.dataset.append(mathml)
                 f.write(repr(mathml) + "\n") # Write repr to file to preserve formatting
-            print(f"Equations saved to {filename}.txt")
+            print(f"Equations saved to {file}")
     
     def scrape(self): # Main function to scrape equations from a DOI
         self.make_request()
@@ -49,7 +53,7 @@ def main():
     api_key = os.getenv("ELSEVIER_API_KEY")
     scraper = Scraper(doi, api_key)
     scraper.scrape()
-    scraper.create_mathml_txt("HTC_equations") # Saves to working directory, not this file's directory
+    scraper.create_mathml_txt("HTC_equations.txt") # Saves to working directory, not this file's directory
 
 if __name__ == "__main__":
     main()
