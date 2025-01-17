@@ -29,15 +29,18 @@ class Equation:
             part2 = random.choice(self.vars + self.nums)
             part3 = random.choice(self.vars + self.nums)
             part4 = random.choice(self.vars + self.nums)
+           
             cv1 = f"{part1}_{part2}"
             cv2 = f"{part1}_{part2}_{part3}"
             cv3 = f"{part1}_{part2}_{part3}_{part4}"
+
             combined_vars.append(random.choice([cv1, cv2, cv3]))
         self.combined_vars = symbols(" ".join(combined_vars)) # Convert the list of combined variables to a tuple of SymPy symbols
 
     def generate_expression(self):            
         complexity1 = random.randint(1, 2) # Length of expression
         expression = random.choice(self.functions)(random.choice(self.vars))  # Start with a function of a variable e.g. sin(a)
+        
         for _ in range(complexity1):
             operator = random.choice(self.operators)
             complexity2 = random.randint(1, 3) # Complexity of the term
@@ -51,6 +54,7 @@ class Equation:
                 inner2 = random.choice((random.choice(self.nums), random.choice(self.vars)))
                 inner_operator = random.choice(self.operators)
                 term = f"{func.__name__}({inner1} {inner_operator} {inner2})" # e.g. sin(a + b), log(c * d)   
+            
             expression = f"{expression} {operator} {term}" # Concatenate the expression with the operator and term
         return sympify(expression)
     

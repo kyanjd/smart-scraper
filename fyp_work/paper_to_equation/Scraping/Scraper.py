@@ -4,11 +4,24 @@ import os
 
 class Scraper:
     def __init__(self, doi, api_key):
+        """
+        Initialise the Scraper with a DOI and API key.
+
+        Args:
+            doi (str): The DOI of the article to scrape.
+            api_key (str): The API key for accessing the Elsevier API.
+        """
         self.doi = doi
         self.api_key = api_key
         self.dataset = []
 
     def make_request(self):
+        """
+        Make a request to the Elsevier API to retrieve the article content.
+
+        Raises:
+            Exception: If the request fails with a status code other than 200.
+        """
         response = requests.get(f"https://api.elsevier.com/content/article/doi/{self.doi}?APIKey={self.api_key}") # Make request to Elsevier API
         if response.status_code == 200:
             print("Request successful \n")
@@ -17,9 +30,15 @@ class Scraper:
             raise Exception(f"Request failed with status code: {response.status_code} \n")
 
     def make_soup(self):
-        self.soup = bs4.BeautifulSoup(self.full_text, "lxml") # Parse response text and create a BS4 object for easy parsing
+        """
+        Parse the response text and create a BeautifulSoup object for easy parsing.
+        """
+        self.soup = bs4.BeautifulSoup(self.full_text, "lxml") 
 
     def find_equations(self):
+        """
+        Find all equations in the article and store them in a dictionary.
+        """
         self.equation = self.soup.find_all("ce:formula")
 
         self.mathml_dict = {}
@@ -31,6 +50,15 @@ class Scraper:
             self.mathml_dict[index] = mathml 
     
     def create_mathml_txt(self, file):
+        """
+        Create a text file containing all the MathML equations.
+
+        Args:
+            file (str): The name of the file to save the equations to.
+
+        Raises:
+            Exception: If the file name does not end with .txt.
+        """
         mmld = self.mathml_dict
 
         if not file.endswith(".txt"):
@@ -43,7 +71,10 @@ class Scraper:
                 f.write(repr(mathml) + "\n") # Write repr to file to preserve formatting
             print(f"Equations saved to {file}")
     
-    def scrape(self): # Main function to scrape equations from a DOI
+    def scrape(self):
+        """
+        Main function to scrape equations from a DOI.
+        """
         self.make_request()
         self.make_soup()
         self.find_equations()

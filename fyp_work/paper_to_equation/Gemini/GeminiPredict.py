@@ -38,25 +38,26 @@ class GeminiPredict():
         response = model.generate_content(prompt, generation_config=generation_config)
         return response.text
 
-    def predict_from_file(self):  
+    def predict_from_txt(self):  
         with open(self.filepath, "r") as file:
             total_rows = sum(1 for row in file) # For progress bar
 
         with open(self.filepath, "r") as file:
-            reader = csv.reader(file)
+            lines = file.readlines()
             with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
-                for row in reader: # Predict rows 1 by 1
-                    mml = repr(row) # Repr for consistency with training data
+                for mml in lines: # Predict rows 1 by 1
                     text = self.predict(mml)
                     self.predictions.append(repr(text))
                     pbar.update(1)
 
-    def save_predictions(self):
+    def save_predictions(self, new_filename=None):
         if not self.predictions:
             print("Generating predictions first")
             self.predict_from_file()
+        if new_filename is None:
+            new_filename = self.filename
 
-        with open(f"{self.filename}_predictions.txt", "w") as file:
+        with open(f"{new_filename}_predictions.txt", "w") as file:
             for pred in self.predictions:
                 file.write(pred + "\n")
 
