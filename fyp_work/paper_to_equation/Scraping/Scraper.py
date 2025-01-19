@@ -49,6 +49,10 @@ class Scraper:
             mathml = mathml.contents[1] # Remove \n from beginning and end along with outer tags
             self.mathml_dict[index] = mathml 
     
+    def find_constants(self):
+        tables = self.soup.find_all("table")
+        print(tables[0])
+    
     def create_mathml_txt(self, file):
         """
         Create a text file containing all the MathML equations.
@@ -86,5 +90,14 @@ def main():
     scraper.scrape()
     scraper.create_mathml_txt("HTC_equations.txt") # Saves to working directory, not this file's directory
 
+def test():
+    doi = "10.1016/j.jmatprotec.2017.04.005"
+    api_key = os.getenv("ELSEVIER_API_KEY")
+    scraper = Scraper(doi, api_key)
+    scraper.make_request()
+    scraper.make_soup()
+    scraper.find_equations()
+    scraper.find_constants()
+
 if __name__ == "__main__":
-    main()
+    test()
