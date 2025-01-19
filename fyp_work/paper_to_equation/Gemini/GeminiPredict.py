@@ -26,8 +26,8 @@ class GeminiPredict():
         Ensure that all variables are treated as symbolic variables and each is defined separately on a new line. 
         Assume that SymPy has been imported as `from sympy import *` so DO NOT include any import statements in your output.
         Example: 
-        MathML: '<mml:mi>h</mml:mi>\n<mml:mo>=</mml:mo>\n<mml:mrow>\n<mml:msub>\n<mml:mi>h</mml:mi>\n<mml:mi>c</mml:mi>\n</mml:msub>\n<mml:mo>+</mml:mo>\n<mml:msub>\n<mml:mi>h</mml:mi>\n<mml:mrow>\n<mml:mi>g</mml:mi>\n<mml:mi>a</mml:mi>\n<mml:mi>t</mml:mi>\n</mml:mrow>\n</mml:msub>\n</mml:mrow>'
-        SymPy Python code: 'h = Symbols('h')\nh_gat = Symbols('h_gat')\nh_c = Symbols('h_c')\ne = Eq(h, h_gat + h_c)'
+        MathML: '<mml:mi>p</mml:mi>\n<mml:mo>=</mml:mo>\n<mml:mrow>\n<mml:msub>\n<mml:mi>p</mml:mi>\n<mml:mi>a</mml:mi>\n</mml:msub>\n<mml:mo>-</mml:mo>\n<mml:msub>\n<mml:mi>y</mml:mi>\n<mml:mrow>\n<mml:mi>r</mml:mi>\n<mml:mi>e</mml:mi>\n<mml:mi>2</mml:mi>\n</mml:mrow>\n</mml:msub>\n</mml:mrow>'
+        SymPy Python code: 'p = Symbols('p')\np_a = Symbols('p_a')\ny_re2 = Symbols('y_re2')\ne = Eq(p, p_a - y_re2)'
         
         Now, translate the following MathML expression into Python code using SymPy.
         MathML: {mml}
