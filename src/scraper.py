@@ -66,7 +66,6 @@ class Scraper:
         driver.quit()
 
         self.soup = bs4.BeautifulSoup(source, "html.parser")
-        with open
 
 
     def _scrape_title(self):

@@ -52,6 +52,7 @@ class Scraper:
     def find_constants(self):
         tables = self.soup.find_all("table")
         print(tables[0])
+        # WIP
     
     def create_mathml_txt(self, file):
         """
