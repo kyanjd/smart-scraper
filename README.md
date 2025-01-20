@@ -5,6 +5,7 @@ This repository is for the FYP (Final Year Project) of Kyan Jasani-Draper involv
 To-Do (n = priority / 5):
 - review usage of repr vs left aligned new lines vs pretty print new lines for MML representation in LLM input and training data (4)
 - review and standardise file types, class inputs and outputs, etc. (5)
+- develop dependency graph for finding the equations neededed to solve a top level equation (2)
 
 Process:
 - input a DOI referring to a tribology paper
