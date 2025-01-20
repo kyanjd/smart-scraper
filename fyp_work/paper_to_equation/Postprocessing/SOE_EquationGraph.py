@@ -66,6 +66,13 @@ class SystemOfEquations():
                 eq = eq.replace('"\n', "")
                 self.eq.append(sympify(eq)) # Store the equation as a SymPy equation
 
+    def reduce_system(self, equation_n):
+        """
+        Reduce the system of equations to the target variable
+        """
+        graph = EquationGraph(self.eq, equation_n)
+        return graph.get_system_of_equations()
+
     def solve(self, target):
         pass
     
@@ -92,7 +99,7 @@ class SystemOfEquations():
 
 class EquationGraph():
     def __init__(self, equations, equation_n):
-        self.n = equation_n - 1
+        self.n = equation_n - 1 # 0-indexed
         self.equations = equations
         self.graph = defaultdict(set)
         self.var_equation = {}
