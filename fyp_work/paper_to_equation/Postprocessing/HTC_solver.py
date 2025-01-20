@@ -155,7 +155,6 @@ exprs = [
         Eq(h_l, beta * (K_stl * N_L) / R),
         Eq(K_stl, 3 / (k_s ** (-1) + k_t ** (-1) + k_l ** (-1))),
         Eq(N_L, 1 - np.exp(- gamma * delta)),
-        Eq(h, h_c + h_g)
     ]
 sol = solve(exprs)
 print(sol)
