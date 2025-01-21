@@ -68,13 +68,16 @@ class SystemOfEquations():
 
     def reduce_system(self, equation_n):
         """
-        Reduce the system of equations to the target variable
+        Reduce the system of equations to those necessary to solve the target equation
+
+        Args:  
+            equation_n (int): The equation number to solve from the paper
+        
+        Returns:
+            A list of SymPy equations that are necessary to solve the target equation
         """
         graph = EquationGraph(self.eq, equation_n)
         return graph.get_system_of_equations()
-
-    def solve(self, target):
-        pass
     
     def solve_test(self, target):
         symbol_list = {"a", "b", "c"}
@@ -92,53 +95,57 @@ class SystemOfEquations():
         # Solve for a
         result = solve(equations)
         print(result[sd[target]])
-    
-    def solve_test2(self, target):
-        pass
 
 
 class EquationGraph():
+    """
+    Encapsulated logic for creating and managing a directed dependency graph of equations 
+    (nodes = LHS variables, arcs = RHS variables dependent on LHS variables from equations)
+    """
     def __init__(self, equations, equation_n):
         self.n = equation_n - 1 # 0-indexed
         self.equations = equations
-        self.graph = defaultdict(set)
-        self.var_equation = {}
+        self.graph = defaultdict(set) # Ensures no repeated dependencies
+        self.var_equation_map = {}
         self._graph_init()
 
     def _graph_init(self):
-        target_eq = self.equations[self.n]
-        target = target_eq.lhs.free_symbols
+        target_eq = self.equations[self.n] 
+        target = target_eq.lhs.free_symbols # Variable to solve for
+        self.target = target
 
-        duplicates = []
+        duplicates = [] # Store indices of unwanted equations with the same target variable
         for i, eq in enumerate(self.equations):
             if eq.lhs.free_symbols == target:
                 duplicates.append(i)
-
-        result = [item for i, item in enumerate(self.equations) if i not in duplicates]
+        
+        result = [item for i, item in enumerate(self.equations) if i not in duplicates] # Remove duplicates
         self.equations = result
-        self.equations.insert(0, target_eq)
-        self.target = target
+        self.equations.insert(0, target_eq) # Reinsert target equation at the beginning
 
         for eq in self.equations:
             lhs = eq.lhs.free_symbols
             rhs = eq.rhs.free_symbols
 
             for var in lhs:
-                self.graph[var].update(rhs)
-                self.var_equation[var] = eq
+                self.graph[var].update(rhs) # Add arcs from LHS to RHS variables
+                self.var_equation_map[var] = eq
     
     def BFS_for_vars(self):
-        seen = set()
-        queue = deque(self.target)
+        """
+        Breadth-first search to find all variables that the target variable depends on
+        """
+        seen = set() # Track visited nodes
+        queue = deque(self.target) # Double-ended queue
 
-        while queue:
-            var = queue.popleft()
+        while queue: 
+            var = queue.popleft() # Extract the leftmost element
             if var not in seen:
                 seen.add(var)
-                queue.extend(self.graph[var])
+                queue.extend(self.graph[var]) # Add all dependent variables to the queue and continue search
         
         return seen
     
     def get_system_of_equations(self):
-        dependencies = self.BFS_for_vars()
-        return [self.var_equation[var] for var in dependencies]
+        dependencies = self.BFS_for_vars() # Get all variables the target variable depends on
+        return [self.var_equation_map[var] for var in dependencies] # Return the equations needed to be solved for the target variable
