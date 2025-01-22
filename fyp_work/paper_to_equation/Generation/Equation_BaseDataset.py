@@ -59,7 +59,7 @@ class Equation:
         return sympify(expression)
     
     def generate_equation(self):
-        lhs = self.generate_expression()
+        lhs = random.choice(self.vars) # Choose a random variable for the left-hand side
         rhs = self.generate_expression()
         self.equation = Eq(lhs, rhs) # Create an attribute containing a SymPy equation in the form of lhs = rhs
     
