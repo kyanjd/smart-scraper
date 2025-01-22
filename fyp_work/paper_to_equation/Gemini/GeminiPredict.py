@@ -50,6 +50,21 @@ class GeminiPredict():
                     self.predictions.append(repr(text))
                     pbar.update(1)
 
+    def predict_from_csv(self):
+        with open(self.filepath, "r") as file:
+            reader = csv.reader(file)
+            total_rows = sum(1 for row in reader) - 1 # For progress bar
+        
+        with open(self.filepath, "r") as file:
+            reader = csv.reader(file)
+            next(reader)
+            with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
+                for row in reader:
+                    mml = row[0]
+                    text = self.predict(mml)
+                    self.predictions.append(repr(text))
+                    pbar.update(1)
+                    
     def save_predictions(self, new_filename=None):
         if not self.predictions:
             print("Generating predictions first")
