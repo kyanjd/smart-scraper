@@ -1,5 +1,9 @@
 from sympy import *
 from collections import defaultdict, deque
+import matplotlib.pyplot as plt
+import networkx as nx
+
+
 
 class SystemOfEquations():
     def __init__(self, filepath):
@@ -149,3 +153,24 @@ class EquationGraph():
     def get_system_of_equations(self):
         dependencies = self.BFS_for_vars() # Get all variables the target variable depends on
         return [self.var_equation_map[var] for var in dependencies] # Return the equations needed to be solved for the target variable
+    
+    def plot_graph(self):
+        """
+        Visualise the dependency graph
+        """
+        dependencies = self.BFS_for_vars()
+
+        G = nx.DiGraph()
+        for var in dependencies:
+            G.add_node(var)
+
+        for var in dependencies:
+            for dep in self.graph[var]:
+                G.add_edge(var, dep) if dep in dependencies else None
+        
+        pos = nx.nx_agraph.graphviz_layout(G, prog="dot")
+        plt.figure(figsize=(10, 8))
+        plt.title(f"{self.target} Dependency Graph")
+        nx.draw_networkx(G, pos, with_labels=True, node_size=5000, node_color="skyblue", font_size=10, font_weight="bold")
+        plt.axis("off")
+        plt.show()
