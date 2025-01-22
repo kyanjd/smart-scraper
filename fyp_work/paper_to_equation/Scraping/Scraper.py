@@ -83,6 +83,8 @@ class Scraper:
         self.make_request()
         self.make_soup()
         self.find_equations()
+        self.find_constants()
+        self.create_mathml_txt(f"Data/{self.doi}_mathml.txt")
 
 def main():
     doi = "10.1016/j.jmatprotec.2017.04.005"
