@@ -7,6 +7,7 @@ To-Do (n = priority / 5):
 - review and standardise file types, class inputs and outputs, etc. (4)
 - ~~develop dependency graph for finding the equations neededed to solve a top level equation (2)~~
 - fix the solve rhs metric for imaginary equation solutions (3)
+- extract constants from paper, must be done on campus wifi (2)
 
 
 Process:
