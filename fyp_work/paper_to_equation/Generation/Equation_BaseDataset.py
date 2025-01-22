@@ -108,7 +108,7 @@ class Equation:
         if index != -1:
             mml = mml[:index] + mml[index + 11:] # 11 is len(tag)       
         
-        self.mml = mml[1:-1] # Update attribute
+        self.mml = mml[1:-1] # Update attribute removing first and last \n
 
     def print_latex(self):
         display(Markdown(f"$$ {latex(self.equation)} $$")) # Display the equation in LaTeX format
