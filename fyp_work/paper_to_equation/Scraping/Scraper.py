@@ -51,6 +51,7 @@ class Scraper:
     
     def find_constants(self):
         tables = self.soup.find_all("table")
+        print(self.mathml_dict)
         print(tables[0])
         # WIP
     
