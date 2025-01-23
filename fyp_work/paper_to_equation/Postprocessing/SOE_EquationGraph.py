@@ -2,8 +2,8 @@ from sympy import *
 from collections import defaultdict, deque
 import matplotlib.pyplot as plt
 import networkx as nx
-
-
+import numpy as np
+from tqdm import tqdm
 
 class SystemOfEquations():
     def __init__(self, filepath):
@@ -70,7 +70,7 @@ class SystemOfEquations():
                 eq = eq.replace('"\n', "")
                 self.eq.append(sympify(eq)) # Store the equation as a SymPy equation
 
-    def reduce_system(self, equation_n):
+    def reduce_system(self, equation_number):
         """
         Reduce the system of equations to those necessary to solve the target equation
 
@@ -80,8 +80,31 @@ class SystemOfEquations():
         Returns:
             A list of SymPy equations that are necessary to solve the target equation
         """
-        graph = EquationGraph(self.eq, equation_n)
+        graph = EquationGraph(self.eq, equation_number)
         return graph.get_system_of_equations()
+    
+    def solve_system(self, equations, x_vals, target):
+        y_pred = []
+        for x in tqdm(x_vals, desc='Generating Curve'):
+            sol = solve(equations)[0]
+            y_pred.append(sol[target])
+        return y_pred
+    
+    def calculate_percent_error(self, y_pred, y_true):
+        y_pred = np.array(y_pred)
+        y_true = np.array(y_true)
+        return np.abs((y_pred - y_true) / y_true) * 100
+
+    def plot_graph(self, x, y_pred, y_true):
+        plt.plot(x, y_pred, label='Predicted')
+        plt.plot(x, y_true, label='True')
+        plt.legend()
+        plt.show()
+
+    def plot_error_graph(self, x, y_pred, y_true):
+        error = self.calculate_percent_error(y_pred, y_true)
+        plt.plot(x, error)
+        plt.show()
     
     def solve_test(self, target):
         symbol_list = {"a", "b", "c"}

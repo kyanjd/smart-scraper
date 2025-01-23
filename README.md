@@ -9,8 +9,8 @@ To-Do (n = priority / 5):
 - fix the solve rhs metric for imaginary equation solutions (2)
 - extract constants from paper, must be done on campus wifi (2)
 - finish SOE class for recreating python file results (3)
-- create utils class to abstract file I/O methods
-
+- create utils class to abstract file I/O methods (1)
+- sort out returns vs modifying internal attributes (1)
 
 Process:
 - input a DOI referring to a tribology paper
