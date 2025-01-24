@@ -1,9 +1,10 @@
 import requests
 import bs4
 import os
+import csv
 
 class Scraper:
-    def __init__(self, doi, api_key):
+    def __init__(self, doi: str, api_key: str):
         """
         Initialise the Scraper with a DOI and API key.
 
@@ -38,6 +39,9 @@ class Scraper:
     def find_equations(self):
         """
         Find all equations in the article and store them in a dictionary.
+
+        Returns:
+            dict: A dictionary containing the equation number and their MathML representations.
         """
         self.equation = self.soup.find_all("ce:formula")
 
@@ -48,14 +52,50 @@ class Scraper:
             mathml = eq.find("mml:math") 
             mathml = mathml.contents[1] # Remove \n from beginning and end along with outer tags
             self.mathml_dict[index] = mathml 
+        
+        return self.mathml_dict
     
     def find_constants(self):
-        tables = self.soup.find_all("table")
-        print(self.mathml_dict)
-        print(tables[0])
-        # WIP
+        """
+        Find all constants in the article and store them in a dictionary with their units and values.
+
+        Returns:
+            dict: A dictionary containing the constants and their values.
+        """
+        self.tables = self.soup.find_all("ce:table")
+        
+        consts = []
+        vals = []
+        for i, table in enumerate(self.tables):
+            if i != 2: # WIP - only looking at table 3 for now
+                continue
+            groups = table.find_all("tgroup") # Combined groups of header and body
+            for group in groups:
+                head = group.find("thead")
+                h_entries = head.find_all("entry") # Contains unformatted constant names
+                for entry in h_entries:
+                    entry = entry.text.replace("\n", "").strip() # Remove newlines and whitespace
+
+                    if entry.startswith("("): # Move units at start of constant to end
+                        lhs, rhs = entry.split(")")
+                        entry = f"{rhs} {lhs})"
+
+                    if len(entry.split()[0]) > 1: # Underscore combined constant names
+                        lhs, rhs = entry.split(" ", 1)
+                        lhs = f"{lhs[0]}_{lhs[1:]}"
+                        entry = f"{lhs} {rhs}"
+
+                    consts.append(entry)
+
+                body = group.find("tbody")
+                b_entries = body.find_all("entry") # Contains constant values
+                for entry in b_entries:
+                    vals.append(float(entry.text))
+                
+        self.const_dict = dict(zip(consts, vals))
+        return self.const_dict
     
-    def create_mathml_txt(self, file):
+    def create_mathml_txt(self, filepath: str):
         """
         Create a text file containing all the MathML equations.
 
@@ -67,34 +107,70 @@ class Scraper:
         """
         mmld = self.mathml_dict
 
-        if not file.endswith(".txt"):
+        if not filepath.endswith(".txt"):
             raise Exception("File must be a .txt file")
         
-        with open(f"{file}", "w", encoding="utf-8") as f:
+        with open(f"{filepath}", "w", encoding="utf-8") as file:
             for i in range(1, len(mmld) + 1):
                 mathml = str(mmld[i]) # Get string representation of MathML
                 self.dataset.append(mathml)
-                f.write(repr(mathml) + "\n") # Write repr to file to preserve formatting
-            print(f"Equations saved to {file}")
+                file.write(repr(mathml) + "\n") # Write repr to file to preserve formatting
+            print(f"Equations saved to {filepath}")
     
-    def scrape(self):
+    def create_mathml_csv(self, filepath: str):
         """
-        Main function to scrape equations from a DOI.
+        Create a CSV file containing all the MathML equations.
+
+        Args:
+            file (str): The name of the file to save the equations to.
+
+        Raises:
+            Exception: If the file name does not end with .csv.
+        """
+        mmld = self.mathml_dict
+
+        if not filepath.endswith(".csv"):
+            raise Exception("File must be a .csv file")
+        
+        with open(f"{filepath}", "w", encoding="utf-8", newline="") as file:
+            writer = csv.writer(file)
+            for i in range(1, len(mmld) + 1):
+                mathml = str(mmld[i])
+                writer.writerow([mathml])
+    
+    def scrape(self, filepath: str=None):
+        """
+        Main function to scrape equations and constants from a DOI.
+
+        Args:
+            filepath (str, optional): The name of the file to save the equations to.
+
+        Returns:
+            mathml_dict: A dictionary containing the equation number and their MathML representations.
+            const_dict: A dictionary containing the constants and their values.   
         """
         self.make_request()
         self.make_soup()
-        self.find_equations()
-        self.find_constants()
-        self.create_mathml_txt(f"Data/{self.doi}_mathml.txt")
+        mathml_dict = self.find_equations()
+        const_dict = self.find_constants()
 
-def main():
+        if filepath:
+            if filepath.endswith(".txt"):
+                self.create_mathml_txt(filepath)
+            elif filepath.endswith(".csv"):
+                self.create_mathml_csv(filepath)
+        
+        return mathml_dict, const_dict
+
+def test():
     doi = "10.1016/j.jmatprotec.2017.04.005"
     api_key = os.getenv("ELSEVIER_API_KEY")
     scraper = Scraper(doi, api_key)
-    scraper.scrape()
-    scraper.create_mathml_txt("HTC_equations.txt") # Saves to working directory, not this file's directory
+    scraper.make_request()
+    scraper.make_soup()
+    # print(scraper.soup.prettify())
 
-def test():
+def main():
     doi = "10.1016/j.jmatprotec.2017.04.005"
     api_key = os.getenv("ELSEVIER_API_KEY")
     scraper = Scraper(doi, api_key)
@@ -104,4 +180,4 @@ def test():
     scraper.find_constants()
 
 if __name__ == "__main__":
-    test()
+    main()
