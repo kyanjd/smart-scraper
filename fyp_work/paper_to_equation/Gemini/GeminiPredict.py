@@ -7,10 +7,8 @@ from tqdm import tqdm
 
 
 class GeminiPredict():
-    def __init__(self, api_key, filepath, model_name):
+    def __init__(self, api_key, model_name):
         self.predictions = []
-        self.filepath = filepath
-        self.filename = os.path.splitext(filepath)[0]
         self.model_name = model_name
 
         if api_key:
@@ -38,11 +36,11 @@ class GeminiPredict():
         response = model.generate_content(prompt, generation_config=generation_config)
         return response.text
 
-    def predict_from_txt(self):  
-        with open(self.filepath, "r") as file:
+    def predict_from_txt(self, filepath):  
+        with open(filepath, "r") as file:
             total_rows = sum(1 for row in file) # For progress bar
 
-        with open(self.filepath, "r") as file:
+        with open(filepath, "r") as file:
             lines = file.readlines()
             with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
                 for mml in lines: # Predict rows 1 by 1
@@ -50,12 +48,14 @@ class GeminiPredict():
                     self.predictions.append(repr(text))
                     pbar.update(1)
 
-    def predict_from_csv(self):
-        with open(self.filepath, "r") as file:
+        return self.predictions
+
+    def predict_from_csv(self, filepath):
+        with open(filepath, "r") as file:
             reader = csv.reader(file)
             total_rows = sum(1 for row in reader) - 1 # For progress bar
         
-        with open(self.filepath, "r") as file:
+        with open(filepath, "r") as file:
             reader = csv.reader(file)
             next(reader)
             with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
@@ -64,6 +64,45 @@ class GeminiPredict():
                     text = self.predict(mml)
                     self.predictions.append(repr(text))
                     pbar.update(1)
+        
+        return self.predictions
+    
+    def predict_from_list(self, mml_list):
+        total_rows = len(mml_list)
+        with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
+            for mml in mml_list:
+                text = self.predict(mml)
+                self.predictions.append(text)
+                pbar.update(1)
+        
+        return self.predictions
+    
+    def generate_predictions(self, mml_list=None, filepath=None):
+        """
+        Main function to generate predictions from a list of MathML expressions or a file containing MathML expressions.
+
+        Args:
+            mml_list (list, optional): A list of MathML expressions.
+            filepath (str, optional): The path to a file containing MathML expressions.
+        """
+        if mml_list and filepath:
+            raise ValueError("Please provide either a list of MathML expressions or a file containing MathML expressions, not both.")
+
+        if mml_list:
+            predictions = self.predict_from_list(mml_list)
+        elif filepath:
+            self.filepath = filepath
+            self.filename = os.path.splitext(filepath)[0]
+            if filepath.endswith(".txt"):
+                predictions = self.predict_from_txt(filepath)
+            elif filepath.endswith(".csv"):
+                predictions = self.predict_from_csv(filepath)
+            else:
+                raise ValueError("File must be either a .txt or .csv file")
+        else:
+            raise ValueError("Please provide either a list of MathML expressions or a file containing MathML expressions")
+        
+        return predictions
                     
     def save_predictions(self, new_filename=None):
         if not self.predictions:

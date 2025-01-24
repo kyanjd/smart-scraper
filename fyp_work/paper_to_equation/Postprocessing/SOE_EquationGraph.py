@@ -6,17 +6,19 @@ import numpy as np
 from tqdm import tqdm
 
 class SystemOfEquations():
-    def __init__(self, filepath):
-        self.str_equations = []
+    def __init__(self, equations=None, filepath=None):
         self.eq = []
         self.filepath = filepath
         self.symbol_lines = set() # Only keep one instance of each symbol line
         self.symbols = set() # Same for symbols
-        self._extract_equations()
-        for eq in self.str_equations:
-            if not self.validate(eq):
-                raise Exception("MathML to SymPy conversion error.") 
-        
+
+        if equations and filepath:
+            raise Exception("Cannot have both equations and a file path.")
+        if equations:
+            self.str_equations = equations
+        if filepath:
+            self.str_equations = []
+            self._extract_equations()        
 
     def _extract_equations(self):
         """
@@ -69,6 +71,12 @@ class SystemOfEquations():
                 eq = line.split(" = ")[1]
                 eq = eq.replace('"\n', "")
                 self.eq.append(sympify(eq)) # Store the equation as a SymPy equation
+        
+    def reduce_symbols(self, const_dict):
+        consts = set(const_dict.keys())
+        consts = [const.split(" ")[0] for const in consts] # Remove the units from the constant
+        self.symbols = self.symbols - set(consts)
+        return self.symbols
 
     def reduce_system(self, equation_number):
         """
@@ -84,9 +92,49 @@ class SystemOfEquations():
         return graph.get_system_of_equations()
     
     def solve_system(self, equations, x_vals, target):
+        k_s = 0.14
+        k_t = 0.0315
+        k_l = 0.024
+        Rs = 3.4e-07
+        Rt = 9.6e-07
+        h_a = 0.8
+        σ_U = 21.0
+        α = 0.000201
+        λ = 6.05
+        β = 0.00011
+        γ = 200000.0
+        δ = 1.5e-5
+
+        k = 1
+        p = 1
+        H = 1
+        θ = 1
+        σ = 1
+        K = 1
+        C = 1
+        A = 1
+        B = 1
+        k_f = 1
+        k_w = 1
+        h_f = 1
+        h_g = 1
+
+        # Variables
+        h = Symbol("h")
+        h_c = Symbol("h_c")
+        K_st = Symbol("K_st")
+        R = Symbol("R")
+        N_P = Symbol("N_P")
+        h_l = Symbol("h_l")
+        K_stl = Symbol("K_stl")
+        N_L = Symbol("N_L")
+        
+        
         y_pred = []
         for x in tqdm(x_vals, desc='Generating Curve'):
+            P = x
             sol = solve(equations)[0]
+            # print(sol)
             y_pred.append(sol[target])
         return y_pred
     
