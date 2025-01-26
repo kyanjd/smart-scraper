@@ -130,10 +130,19 @@ class SystemOfEquations():
         N_L = Symbol("N_L")
         
         
+        
         y_pred = []
         for x in tqdm(x_vals, desc='Generating Curve'):
             P = x
-            sol = solve(equations)[0]
+            exprs = [Eq(h, h_a + h_c + h_l), 
+            Eq(h_c, K_st*N_P*α/R), 
+            Eq(K_st, 2/(1/k_t + 1/k_s)), 
+            Eq(R, sqrt(Rs**2 + Rt**2)), 
+            Eq(N_P, 1 - exp(-P*λ/σ_U)), 
+            Eq(h_l, K_stl*N_L*β/R), 
+            Eq(K_stl, 3/(1/k_t + 1/k_s + 1/k_l)), 
+            Eq(N_L, 1 - exp(-γ*δ))]
+            sol = solve(exprs)[0] # equations
             # print(sol)
             y_pred.append(sol[target])
         return y_pred
