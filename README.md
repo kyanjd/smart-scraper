@@ -17,5 +17,5 @@ Process:
 - extract constants from tables and save to a file
 - extract MathML representations of equations and save to a separate file
 - pass MathML equations to a LLM for conversion to individual SymPy equations and save to a file
-- pass the collection of SymPy equations along with the constants to a separate LLM for conversion to a system of equations ready for solving
+- (pass the collection of SymPy equations along with the constants to a separate LLM for conversion to a system of equations ready for solving)
 - implement the system of equations back into Python for solving, plotting and error analysis
