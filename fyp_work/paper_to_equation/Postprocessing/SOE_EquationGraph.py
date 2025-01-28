@@ -18,7 +18,13 @@ class SystemOfEquations():
             self.str_equations = equations
         if filepath:
             self.str_equations = []
-            self._extract_equations()        
+            self._extract_equations()       
+
+        for eq in self.str_equations:
+            if not self.validate(eq):
+                raise Exception(f"Invalid equation: {eq}")
+            else:
+                self.parse_equation(eq) 
 
     def _extract_equations(self):
         """
@@ -28,7 +34,7 @@ class SystemOfEquations():
             for line in file:
                 self.str_equations.append(line)
 
-    def get_equations(self):
+    def get_str_equations(self):
         """
         Getter for the equation list
         """
@@ -71,6 +77,12 @@ class SystemOfEquations():
                 eq = line.split(" = ")[1]
                 eq = eq.replace('"\n', "")
                 self.eq.append(sympify(eq)) # Store the equation as a SymPy equation
+
+    def get_sympy_equations(self):
+        """
+        Getter for the SymPy equations
+        """
+        return self.eq
         
     def reduce_symbols(self, const_dict):
         consts = set(const_dict.keys())
