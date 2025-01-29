@@ -55,10 +55,9 @@ class SystemOfEquations():
             False if the equation is invalid
         """
         try:
-            eval(equation) # Execute the equation string as code
+            exec(equation) # Execute the equation string as code
             return True
         except Exception as e:
-            print(e)
             return False
 
     def parse_equation(self, equation):
@@ -68,7 +67,8 @@ class SystemOfEquations():
         Args:
             equation (str): The equation string to parse
         """
-        for line in equation.split("\\n"): # Split equation string into lines (e.g. Symbol, Symbol, Eq)
+        splitter = "\n" if "\n" in equation else "\\n" # Works for standard and repr string display
+        for line in equation.split(splitter): # Split equation string into lines (e.g. Symbol, Symbol, Eq)
             if "Symbol" in line:
                 line = line.replace('"', "")
                 self.symbol_lines.add(line) # Store line for file creation

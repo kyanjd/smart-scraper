@@ -11,6 +11,7 @@ To-Do (n = priority / 5):
 - finish SOE class for recreating python file results (3)
 - create utils class to abstract file I/O methods (1)
 - sort out returns vs modifying internal attributes (1)
+- fix reduce systems (2)
 
 Process:
 - input a DOI referring to a tribology paper
