@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 class SystemOfEquations():
     def __init__(self, equations=None, filepath=None):
-        self.eq = []
+        self.sympy_equations = []
         self.filepath = filepath
         self.symbol_lines = set() # Only keep one instance of each symbol line
         self.symbols = set() # Same for symbols
@@ -74,15 +74,15 @@ class SystemOfEquations():
                 self.symbol_lines.add(line) # Store line for file creation
                 self.symbols.add(line.split(" = ")[0]) # Store symbol as a variable
             elif "Eq" in line:
-                eq = line.split(" = ")[1]
-                eq = eq.replace('"\n', "")
-                self.eq.append(sympify(eq)) # Store the equation as a SymPy equation
+                sympy_equation = line.split(" = ")[1]
+                sympy_equation = sympy_equation.replace('"\n', "")
+                self.sympy_equations.append(sympify(sympy_equation)) # Store the equation as a SymPy equation
 
     def get_sympy_equations(self):
         """
         Getter for the SymPy equations
         """
-        return self.eq
+        return self.sympy_equations
         
     def reduce_symbols(self, const_dict):
         consts = set(const_dict.keys())
