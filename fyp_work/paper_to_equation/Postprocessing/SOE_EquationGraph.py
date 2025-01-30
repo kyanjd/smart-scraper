@@ -45,7 +45,7 @@ class SystemOfEquations():
 
     def validate(self, equation):
         """
-        Check if the equation string is valid SymPy/Python code
+        Check if the equation string is valid SymPy Python code
 
         Args:
             equation (str): The equation string to validate
@@ -100,8 +100,8 @@ class SystemOfEquations():
         Returns:
             A list of SymPy equations that are necessary to solve the target equation
         """
-        graph = EquationGraph(self.eq, equation_number)
-        return graph.get_system_of_equations()
+        self.graph = EquationGraph(self.eq, equation_number)
+        return self.graph.get_system_of_equations()
     
     def solve_system(self, equations, x_vals, target):
         k_s = 0.14
@@ -174,6 +174,9 @@ class SystemOfEquations():
         error = self.calculate_percent_error(y_pred, y_true)
         plt.plot(x, error)
         plt.show()
+
+    def plot_dependency_graph(self):
+        self.graph.plot_graph()
     
     def solve_test(self, target):
         symbol_list = {"a", "b", "c"}
@@ -260,7 +263,7 @@ class EquationGraph():
             for dep in self.graph[var]:
                 G.add_edge(var, dep) if dep in dependencies else None
         
-        pos = nx.nx_agraph.graphviz_layout(G, prog="dot")
+        pos = nx.nx_agraph.graphviz_layout(G, prog="dot") # Tree layout
         plt.figure(figsize=(10, 8))
         plt.title(f"{self.target} Dependency Graph")
         nx.draw_networkx(G, pos, with_labels=True, node_size=5000, node_color="skyblue", font_size=10, font_weight="bold")
