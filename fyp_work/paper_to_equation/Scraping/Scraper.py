@@ -51,7 +51,7 @@ class Scraper:
             index = int(label.text[1:-1]) # Remove parentheses and convert to int
             mathml = eq.find("mml:math") 
             mathml = mathml.contents[1] # Remove \n from beginning and end along with outer tags
-            self.mathml_dict[index] = mathml 
+            self.mathml_dict[index] = str(mathml) 
         
         return self.mathml_dict
     
@@ -152,6 +152,8 @@ class Scraper:
         self.make_request()
         self.make_soup()
         mathml_dict = self.find_equations()
+        if not mathml_dict:
+            raise Exception("No equations found. Ensure your WiFi account is verified with Elsevier.")
         const_dict = self.find_constants()
 
         if filepath:
@@ -166,9 +168,7 @@ def test():
     doi = "10.1016/j.jmatprotec.2017.04.005"
     api_key = os.getenv("ELSEVIER_API_KEY")
     scraper = Scraper(doi, api_key)
-    scraper.make_request()
-    scraper.make_soup()
-    # print(scraper.soup.prettify())
+    mathml_dict, const_dict = scraper.scrape()
 
 def main():
     doi = "10.1016/j.jmatprotec.2017.04.005"

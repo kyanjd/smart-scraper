@@ -4,6 +4,7 @@ import os
 import csv
 import sacrebleu
 from tqdm import tqdm
+import time
 
 
 class GeminiPredict():
@@ -33,8 +34,20 @@ class GeminiPredict():
         """
         model = genai.GenerativeModel(model_name=self.model_name)
         generation_config = GenerationConfig(temperature=temperature)
-        response = model.generate_content(prompt, generation_config=generation_config)
-        return response.text
+
+        retries = 3
+        for attempt in range(retries):
+            try:
+                response = model.generate_content(prompt, generation_config=generation_config)
+                return response.text
+            except Exception as e:
+                if attempt < retries - 1:
+                    # print(f"Attempt {attempt + 1} failed. Retrying...")
+                    wait_time = 2 ** attempt
+                    time.sleep(wait_time)
+                else:
+                    # print(f"Failed to generate prediction: {e}")
+                    return None
 
     def predict_from_txt(self, filepath):  
         with open(filepath, "r") as file:
