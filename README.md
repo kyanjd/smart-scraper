@@ -4,13 +4,14 @@ This repository is for the FYP (Final Year Project) of Kyan Jasani-Draper involv
 
 To-Do (n = priority / 5):
 - review usage of repr vs left aligned new lines vs pretty print new lines for MML representation in LLM input and training data (3)
-- review and standardise file types, class inputs and outputs, etc. (4)
+- ~~review and standardise file types, class inputs and outputs, etc. (4)~~
 - ~~develop dependency graph for finding the equations neededed to solve a top level equation (2)~~
 - fix the solve rhs metric for imaginary equation solutions (2)
-- extract constants from paper, must be done on campus wifi (2)
+- ~~extract constants from paper, must be done on campus wifi (2)~~
 - finish SOE class for recreating python file results (3)
 - create utils class to abstract file I/O methods (1)
 - sort out returns vs modifying internal attributes (1)
+- add new docstrings to used functions
 - fix reduce systems (2)
 
 Process:
