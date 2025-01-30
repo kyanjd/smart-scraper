@@ -90,8 +90,8 @@ class SystemOfEquations():
         Returns:
             A list of SymPy equations that are necessary to solve the target equation
         """
-        constants_symbol_dict = {Symbol(k): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value
-        constants_symbol_dict[Symbol("δ"): 1.5e-5] # WIP hardcoded for now
+        constants_symbol_dict = {Symbol(k.split(" ")[0]): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value, removing the units
+        constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
         expressions = [eq.subs(constants_symbol_dict) for eq in self.sympy_equations]
         self.graph = EquationGraph(expressions, equation_number)
         self.sympy_equations = self.graph.get_system_of_equations()
