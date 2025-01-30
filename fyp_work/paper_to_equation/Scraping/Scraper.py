@@ -41,7 +41,7 @@ class Scraper:
         Find all equations in the article and store them in a dictionary.
 
         Returns:
-            dict: A dictionary containing the equation number and their MathML representations.
+            mathml_dict: A dictionary containing the equation number and their MathML representations.
         """
         self.equation = self.soup.find_all("ce:formula")
 
@@ -60,7 +60,7 @@ class Scraper:
         Find all constants in the article and store them in a dictionary with their units and values.
 
         Returns:
-            dict: A dictionary containing the constants and their values.
+            const_dict: A dictionary containing the constants and their values.
         """
         self.tables = self.soup.find_all("ce:table")
         
@@ -100,7 +100,7 @@ class Scraper:
         Create a text file containing all the MathML equations.
 
         Args:
-            file (str): The name of the file to save the equations to.
+            filepath (str): The name of the file to save the equations to.
 
         Raises:
             Exception: If the file name does not end with .txt.
@@ -122,7 +122,7 @@ class Scraper:
         Create a CSV file containing all the MathML equations.
 
         Args:
-            file (str): The name of the file to save the equations to.
+            filepath (str): The name of the file to save the equations to.
 
         Raises:
             Exception: If the file name does not end with .csv.
@@ -143,7 +143,7 @@ class Scraper:
         Main function to scrape equations and constants from a DOI.
 
         Args:
-            filepath (str, optional): The name of the file to save the equations to.
+            filepath (str, optional): The path to the file to save the equations to.
 
         Returns:
             mathml_dict: A dictionary containing the equation number and their MathML representations.

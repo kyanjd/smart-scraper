@@ -9,6 +9,9 @@ import time
 
 class GeminiPredict():
     def __init__(self, api_key, model_name):
+        """
+        Initialise the GeminiPredict object with a model name and load the given API key.
+        """
         self.predictions = []
         self.model_name = model_name
 
@@ -19,7 +22,18 @@ class GeminiPredict():
         else:
             raise ValueError("API key not found. Please provide a valid API key.")
 
-    def predict(self, mml, temperature=0.1):
+    def predict(self, mml, temperature=0.1, retries=3):
+        """
+        Predicts the SymPy Python code equivalent of a given MathML expression using the Gemini model set in __init__().
+
+        Args:
+            mml (str): The MathML expression to be translated.
+            temperature (float, optional): The temperature parameter for generation. Defaults to 0.1.
+            retries (int, optional): Number of retries in case of failure. Defaults to 3.
+        
+        Returns:
+            str: The SymPy Python code equivalent of the given MathML expression.
+        """
         prompt = f"""
         You are an expert at translating MathML to Python code using the SymPy library. Translate the following MathML expression into a valid Python SymPy expression. 
         Ensure that all variables are treated as symbolic variables and each is defined separately on a new line. 
@@ -35,21 +49,29 @@ class GeminiPredict():
         model = genai.GenerativeModel(model_name=self.model_name)
         generation_config = GenerationConfig(temperature=temperature)
 
-        retries = 3
+        
         for attempt in range(retries):
             try:
-                response = model.generate_content(prompt, generation_config=generation_config)
+                response = model.generate_content(prompt, generation_config=generation_config) # Pass prompt to model and generate response
                 return response.text
             except Exception as e:
                 if attempt < retries - 1:
-                    # print(f"Attempt {attempt + 1} failed. Retrying...")
-                    wait_time = 2 ** attempt
+                    wait_time = 2 ** attempt # Expontential backoff
                     time.sleep(wait_time)
                 else:
-                    # print(f"Failed to generate prediction: {e}")
-                    return None
+                    raise e
 
-    def predict_from_txt(self, filepath):  
+    def predict_from_txt(self, filepath, retries=3):  
+        """
+        Predicts the SymPy Python code equivalent of a list of MathML expressions stored line by line in a .txt file.
+
+        Args:
+            filepath (str): The path to the .txt file containing MathML expressions.
+            retries (int, optional): Number of retries in case of failure. Defaults to 3.
+
+        Returns:
+            predictions: A list of SymPy Python code equivalent of the given MathML expressions.
+        """
         with open(filepath, "r") as file:
             total_rows = sum(1 for row in file) # For progress bar
 
@@ -57,13 +79,23 @@ class GeminiPredict():
             lines = file.readlines()
             with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
                 for mml in lines: # Predict rows 1 by 1
-                    text = self.predict(mml)
-                    self.predictions.append(repr(text))
+                    text = self.predict(mml, retries=retries)
+                    self.predictions.append(text)
                     pbar.update(1)
 
         return self.predictions
 
-    def predict_from_csv(self, filepath):
+    def predict_from_csv(self, filepath, retries=3):
+        """
+        Predicts the SymPy Python code equivalent of a list of MathML expressions stored in a .csv file.
+
+        Args:
+            filepath (str): The path to the .csv file containing MathML expressions.
+            retries (int, optional): Number of retries in case of failure. Defaults to 3.
+
+        Returns:
+            predictions: A list of SymPy Python code equivalent of the given MathML expressions.
+        """
         with open(filepath, "r") as file:
             reader = csv.reader(file)
             total_rows = sum(1 for row in reader) - 1 # For progress bar
@@ -74,17 +106,27 @@ class GeminiPredict():
             with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
                 for row in reader:
                     mml = row[0]
-                    text = self.predict(mml)
-                    self.predictions.append(repr(text))
+                    text = self.predict(mml, retries=retries)
+                    self.predictions.append(text)
                     pbar.update(1)
         
         return self.predictions
     
-    def predict_from_list(self, mml_list):
+    def predict_from_list(self, mml_list, retries=3):
+        """
+        Predicts the SymPy Python code equivalent of a list of MathML expressions.
+
+        Args:
+            mml_list (list): A list of MathML expressions.
+            retries (int, optional): Number of retries in case of failure. Defaults to 3.
+
+        Returns:
+            predictions: A list of SymPy Python code equivalent of the given MathML expressions.
+        """
         total_rows = len(mml_list)
         with tqdm(total=total_rows, desc="Generating Predictions", unit="row") as pbar:
             for mml in mml_list:
-                text = self.predict(mml)
+                text = self.predict(mml, retries=retries)
                 self.predictions.append(text)
                 pbar.update(1)
         
@@ -97,13 +139,17 @@ class GeminiPredict():
         Args:
             mml_list (list, optional): A list of MathML expressions.
             filepath (str, optional): The path to a file containing MathML expressions.
+
+        Returns:
+            predictions: A list of SymPy Python code equivalent of the given MathML expressions.
         """
         if mml_list and filepath:
             raise ValueError("Please provide either a list of MathML expressions or a file containing MathML expressions, not both.")
 
         if mml_list:
             predictions = self.predict_from_list(mml_list)
-        elif filepath:
+
+        if filepath:
             self.filepath = filepath
             self.filename = os.path.splitext(filepath)[0]
             if filepath.endswith(".txt"):
