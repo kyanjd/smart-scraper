@@ -69,11 +69,7 @@ class SystemOfEquations():
         """
         splitter = "\n" if "\n" in equation else "\\n" # Works for standard and repr string display
         for line in equation.split(splitter): # Split equation string into lines (e.g. Symbol, Symbol, Eq)
-            if "Symbol" in line:
-                line = line.replace('"', "")
-                self.symbol_lines.add(line) # Store line for file creation
-                self.symbols.add(line.split(" = ")[0]) # Store symbol as a variable
-            elif "Eq" in line:
+            if "Eq" in line:
                 sympy_equation = line.split(" = ")[1]
                 sympy_equation = sympy_equation.replace('"\n', "")
                 self.sympy_equations.append(sympify(sympy_equation)) # Store the equation as a SymPy equation
@@ -83,14 +79,8 @@ class SystemOfEquations():
         Getter for the SymPy equations
         """
         return self.sympy_equations
-        
-    def reduce_symbols(self, const_dict):
-        consts = set(const_dict.keys())
-        consts = [const.split(" ")[0] for const in consts] # Remove the units from the constant
-        self.symbols = self.symbols - set(consts)
-        return self.symbols
-
-    def reduce_system(self, equation_number):
+    
+    def reduce_system(self, equation_number, const_dict):
         """
         Reduce the system of equations to those necessary to solve the target equation
 
@@ -100,8 +90,21 @@ class SystemOfEquations():
         Returns:
             A list of SymPy equations that are necessary to solve the target equation
         """
-        self.graph = EquationGraph(self.eq, equation_number)
-        return self.graph.get_system_of_equations()
+        constants_symbol_dict = {Symbol(k): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value
+        constants_symbol_dict[Symbol("δ"): 1.5e-5] # WIP hardcoded for now
+        expressions = [eq.subs(constants_symbol_dict) for eq in self.sympy_equations]
+        self.graph = EquationGraph(expressions, equation_number)
+        self.sympy_equations = self.graph.get_system_of_equations()
+        return self.sympy_equations
+        
+    def reduce_symbols(self, const_dict):
+        for eq in self.sympy_equations:
+            self.symbols.add(eq.free_symbols)
+
+        consts = set(const_dict.keys())
+        consts = [const.split(" ")[0] for const in consts] # Remove the units from the constant
+        self.symbols = self.symbols - set(consts)
+        return self.symbols
     
     def solve_system(self, equations, x_vals, target):
         k_s = 0.14
