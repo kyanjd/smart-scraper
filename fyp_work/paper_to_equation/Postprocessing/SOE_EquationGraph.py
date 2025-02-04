@@ -105,8 +105,6 @@ class SystemOfEquations():
         Returns:
             A list of SymPy equations that are necessary to solve the target equation
         """
-        self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
-        print(self.sympy_equations)
         constants_symbol_dict = {Symbol(k.split(" ")[0]): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value, removing the units
         constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
         constants_symbol_dict[Symbol("P")] = 1 # WIP hardcoded for now
@@ -124,7 +122,19 @@ class SystemOfEquations():
         self.symbols = self.symbols - set(consts)
         return self.symbols
     
-    
+    def solve_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int):
+        self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
+        y_pred = []
+        for x in tqdm(independent_vals, desc='Generating Curve'):
+            # print("x = ", x)
+            const_dict[independent_symbol] = x
+            # print("const_dict = ", const_dict)
+            exprs = self.reduce_system(equation_number, const_dict)
+            sol = solve(exprs)[0]
+            # print("sol = ", sol)
+            y_pred.append(sol[Symbol(target_symbol)])
+        return y_pred
+
     
     def _solve_system(self, equations, x_vals, target):
         k_s = 0.14
