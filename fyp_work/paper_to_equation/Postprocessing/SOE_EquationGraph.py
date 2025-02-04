@@ -62,7 +62,7 @@ class SystemOfEquations():
 
     def parse_equation(self, equation):
         """
-        Parse the equation string and store the symbols and equations
+        Parse the equation string and store the SymPy equations
 
         Args:
             equation (str): The equation string to parse
@@ -80,26 +80,6 @@ class SystemOfEquations():
         """
         return self.sympy_equations
     
-    def reduce_system(self, equation_number, const_dict):
-        """
-        Reduce the system of equations to those necessary to solve the target equation
-
-        Args:  
-            equation_n (int): The equation number to solve from the paper
-        
-        Returns:
-            A list of SymPy equations that are necessary to solve the target equation
-        """
-        self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
-        print(self.sympy_equations)
-        constants_symbol_dict = {Symbol(k.split(" ")[0]): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value, removing the units
-        constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
-        expressions = [eq.subs(constants_symbol_dict) for eq in self.sympy_equations]
-        print(expressions)
-        self.graph = EquationGraph(expressions, equation_number)
-        self.sympy_equations = self.graph.get_system_of_equations()
-        return self.sympy_equations
-    
     def _remove_duplicates(self, equation_number, equations):
         target_eq = equations[equation_number - 1] # 0-indexed
         target = target_eq.lhs.free_symbols # Variable to solve for
@@ -114,8 +94,27 @@ class SystemOfEquations():
         result.insert(0, target_eq) # Reinsert target equation at the beginning
         # self.equations.insert(0, target_eq) # Reinsert target equation at the beginning
         return result
+    
+    def reduce_system(self, equation_number, const_dict):
+        """
+        Reduce the system of equations to those necessary to solve the target equation
 
+        Args:  
+            equation_n (int): The equation number to solve from the paper
         
+        Returns:
+            A list of SymPy equations that are necessary to solve the target equation
+        """
+        self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
+        print(self.sympy_equations)
+        constants_symbol_dict = {Symbol(k.split(" ")[0]): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value, removing the units
+        constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
+        constants_symbol_dict[Symbol("P")] = 1 # WIP hardcoded for now
+        expressions = [eq.subs(constants_symbol_dict) for eq in self.sympy_equations]
+        self.graph = EquationGraph(expressions)
+        self.sympy_equations = self.graph.get_system_of_equations()
+        return self.sympy_equations
+            
     def reduce_symbols(self, const_dict):
         for eq in self.sympy_equations:
             self.symbols.add(eq.free_symbols)
@@ -125,7 +124,9 @@ class SystemOfEquations():
         self.symbols = self.symbols - set(consts)
         return self.symbols
     
-    def solve_system(self, equations, x_vals, target):
+    
+    
+    def _solve_system(self, equations, x_vals, target):
         k_s = 0.14
         k_t = 0.0315
         k_l = 0.024
@@ -223,26 +224,15 @@ class EquationGraph():
     Encapsulated logic for creating and managing a directed dependency graph of equations 
     (nodes = LHS variables, arcs = RHS variables dependent on LHS variables from equations)
     """
-    def __init__(self, equations, equation_number):
-        self.n = equation_number - 1 # 0-indexed
+    def __init__(self, equations):
         self.equations = equations
         self.graph = defaultdict(set) # Ensures no repeated dependencies
         self.var_equation_map = {}
         self._graph_init()
 
     def _graph_init(self):
-        target_eq = self.equations[self.n] 
-        target = target_eq.lhs.free_symbols # Variable to solve for
-        self.target = target
-
-        duplicates = [] # Store indices of unwanted equations with the same target variable
-        for i, eq in enumerate(self.equations):
-            if eq.lhs.free_symbols == target:
-                duplicates.append(i)
-        
-        result = [item for i, item in enumerate(self.equations) if i not in duplicates] # Remove duplicates
-        self.equations = result
-        self.equations.insert(0, target_eq) # Reinsert target equation at the beginning
+        target_eq = self.equations[0] # Will always be the first equation from earlier reinsertion
+        self.target = target_eq.lhs.free_symbols # Variable to solve for
 
         for eq in self.equations:
             lhs = eq.lhs.free_symbols
