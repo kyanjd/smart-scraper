@@ -107,11 +107,10 @@ class SystemOfEquations():
         """
         constants_symbol_dict = {Symbol(k.split(" ")[0]): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value, removing the units
         constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
-        constants_symbol_dict[Symbol("P")] = 1 # WIP hardcoded for now
         expressions = [eq.subs(constants_symbol_dict) for eq in self.sympy_equations]
         self.graph = EquationGraph(expressions)
-        self.sympy_equations = self.graph.get_system_of_equations()
-        return self.sympy_equations
+        reduced_equations = self.graph.get_system_of_equations()
+        return reduced_equations
             
     def reduce_symbols(self, const_dict):
         for eq in self.sympy_equations:
@@ -126,71 +125,68 @@ class SystemOfEquations():
         self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
         y_pred = []
         for x in tqdm(independent_vals, desc='Generating Curve'):
-            # print("x = ", x)
             const_dict[independent_symbol] = x
-            # print("const_dict = ", const_dict)
             exprs = self.reduce_system(equation_number, const_dict)
             sol = solve(exprs)[0]
-            # print("sol = ", sol)
             y_pred.append(sol[Symbol(target_symbol)])
         return y_pred
 
     
-    def _solve_system(self, equations, x_vals, target):
-        k_s = 0.14
-        k_t = 0.0315
-        k_l = 0.024
-        Rs = 3.4e-07
-        Rt = 9.6e-07
-        h_a = 0.8
-        σ_U = 21.0
-        α = 0.000201
-        λ = 6.05
-        β = 0.00011
-        γ = 200000.0
-        δ = 1.5e-5
+    # def _solve_system(self, equations, x_vals, target):
+    #     k_s = 0.14
+    #     k_t = 0.0315
+    #     k_l = 0.024
+    #     Rs = 3.4e-07
+    #     Rt = 9.6e-07
+    #     h_a = 0.8
+    #     σ_U = 21.0
+    #     α = 0.000201
+    #     λ = 6.05
+    #     β = 0.00011
+    #     γ = 200000.0
+    #     δ = 1.5e-5
 
-        k = 1
-        p = 1
-        H = 1
-        θ = 1
-        σ = 1
-        K = 1
-        C = 1
-        A = 1
-        B = 1
-        k_f = 1
-        k_w = 1
-        h_f = 1
-        h_g = 1
+    #     k = 1
+    #     p = 1
+    #     H = 1
+    #     θ = 1
+    #     σ = 1
+    #     K = 1
+    #     C = 1
+    #     A = 1
+    #     B = 1
+    #     k_f = 1
+    #     k_w = 1
+    #     h_f = 1
+    #     h_g = 1
 
-        # Variables
-        h = Symbol("h")
-        h_c = Symbol("h_c")
-        K_st = Symbol("K_st")
-        R = Symbol("R")
-        N_P = Symbol("N_P")
-        h_l = Symbol("h_l")
-        K_stl = Symbol("K_stl")
-        N_L = Symbol("N_L")
+    #     # Variables
+    #     h = Symbol("h")
+    #     h_c = Symbol("h_c")
+    #     K_st = Symbol("K_st")
+    #     R = Symbol("R")
+    #     N_P = Symbol("N_P")
+    #     h_l = Symbol("h_l")
+    #     K_stl = Symbol("K_stl")
+    #     N_L = Symbol("N_L")
         
         
         
-        y_pred = []
-        for x in tqdm(x_vals, desc='Generating Curve'):
-            P = x
-            exprs = [Eq(h, h_a + h_c + h_l), 
-            Eq(h_c, K_st*N_P*α/R), 
-            Eq(K_st, 2/(1/k_t + 1/k_s)), 
-            Eq(R, sqrt(Rs**2 + Rt**2)), 
-            Eq(N_P, 1 - exp(-P*λ/σ_U)), 
-            Eq(h_l, K_stl*N_L*β/R), 
-            Eq(K_stl, 3/(1/k_t + 1/k_s + 1/k_l)), 
-            Eq(N_L, 1 - exp(-γ*δ))]
-            sol = solve(exprs)[0] # equations
-            # print(sol)
-            y_pred.append(sol[target])
-        return y_pred
+    #     y_pred = []
+    #     for x in tqdm(x_vals, desc='Generating Curve'):
+    #         P = x
+    #         exprs = [Eq(h, h_a + h_c + h_l), 
+    #         Eq(h_c, K_st*N_P*α/R), 
+    #         Eq(K_st, 2/(1/k_t + 1/k_s)), 
+    #         Eq(R, sqrt(Rs**2 + Rt**2)), 
+    #         Eq(N_P, 1 - exp(-P*λ/σ_U)), 
+    #         Eq(h_l, K_stl*N_L*β/R), 
+    #         Eq(K_stl, 3/(1/k_t + 1/k_s + 1/k_l)), 
+    #         Eq(N_L, 1 - exp(-γ*δ))]
+    #         sol = solve(exprs)[0] # equations
+    #         # print(sol)
+    #         y_pred.append(sol[target])
+    #     return y_pred
     
     def calculate_percent_error(self, y_pred, y_true):
         y_pred = np.array(y_pred)
