@@ -15,6 +15,7 @@
 
 # Ignore training checkpoints 
 fyp_work/paper_to_equation/T5/t5-base-mathml-to-python/
+src/paper_to_equation/T5/t5-base-mathml-to-python/
 
 # Ignore cache
 __pycache__/
