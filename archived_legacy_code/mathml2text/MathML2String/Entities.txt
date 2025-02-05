@@ -1,0 +1,127 @@
+﻿Α	&Alpha;	&#x0391;	 	v
+Β	&Beta;	&#x0392;	 	v
+Γ	&Gamma;	&#x0393;	 	v
+Δ	&Delta;	&#x0394;	 	v
+Ε	&Epsilon;	&#x0395;	 	v
+Ζ	&Zeta;	&#x0396;	 	v
+Η	&Eta;	&#x0397;	 	v
+Θ	&Theta;	&#x0398;	 	v
+Ι	&Iota;	&#x0399;	 	v
+Κ	&Kappa;	&#x039a;	 	v
+Λ	&Lambda;	&#x039b;	 	v
+Μ	&Mu;	&#x039c;	 	v
+Ν	&Nu;	&#x039d;	 	v
+Ξ	&Xi;	&#x039e;	 	v
+Ο	&Omicron;	&#x039f;	 	v
+Π	&Pi;	&#x03a0;	 	v
+Ρ	&Rho;	&#x03a1;	 	v
+Σ	&Sigma;	&#x03a3;	 	v
+Τ	&Tau;	&#x03a4;	 	v
+Υ	&Upsilon;	&#x03a5;	 	v
+Φ	&Phi;	&#x03a6;	 	v
+Χ	&Chi;	&#x03a7;	 	v
+Ψ	&Psi;	&#x03a8;	 	v
+Ω	&Omega;	&#x03a9;	 	v
+				
+α	&alpha;	&#x03b1;	 	v
+β	&beta;	&#x03b2;	 	v
+γ	&gamma;	&#x03b3;	 	v
+δ	&delta;	&#x03b4;	 	v
+ε	&epsilon;	&#x03b5;	 	v
+ζ	&zeta;	&#x03b6;	 	v
+η	&eta;	&#x03b7;	 	v
+θ	&theta;	&#x03b8;	 	v
+ι	&iota;	&#x03b9;	 	v
+κ	&kappa;	&#x03ba;	 	v
+λ	&lambda;	&#x03bb;	 	v
+μ	&mu;	&#x03bc;	 	v
+ν	&nu;	&#x03bd;	 	v
+ξ	&xi;	&#x03be;	 	v
+ο	&omicron;	&#x03bf;	 	v
+π	&pi;	&#x03c0;	 	v
+ρ	&rho;	&#x03c1;	 	v
+σ	&sigma;	&#x03c3;	 	v
+τ	&tau;	&#x03c4;	 	v
+υ	&upsilon;	&#x03c5;	 	v
+φ	&phi;	&#x03c6;	 	v
+χ	&chi;	&#x03c7;	 	v
+ψ	&psi;	&#x03c8;	 	v
+ω	&omega;	&#x03c9;	 	v
+				
+-	&minus;	&#x2212;	To specify subtraction	o
+×	&times;	&#x00d7;	To specify multiplication	o
+÷	&divide;	&#x00f7;	To specify division	o
+≠	&ne;	&#x2260;	To specify not equals	o
+≈	&asymp;	&#x2248;	To specify approximately equals	o
+<	&lt;	&#x003c;	To specify less than	o
+≤	&le;	&#x2264;	To specify less than or equals	o
+>	&gt;	&#x003e;	To specify greater than	o
+≥	&ge;	&#x2265;	To specify greater than or equal	o
+±	&plusmn;	&#x00b1;	To specify plus or minus	o
+∝	&prop;	&#x221d;	To specify proportional to	o
+∑	&sum;	&#x2211;	To specify summation	o
+∏	&prod;	&#x220f;	To specify product	o
+⌊	&lfloor;	&#x230a;	To specify left floor	o
+⌋	&rfloor;	&#x230b;	To specify right floor	o
+⌈	&lceil;	&#x2308;	To specify left ceiling	o
+⌉	&rceil;	&#x2309;	To specify right ceiling	o
+				
+′	&prime;	&#x2032;	Prime (1st derivative)	o
+″	&prime;	&#x2033;	Double prime (2nd derivative)	o
+‴	&tprime;	&#x2034;	Triple prime (3nd derivative)	o
+∂	&part;	&#x2202;	To specify partial differential	o
+δ	&delta;	&#x0394;	To specify increment	o
+∇	&del;	&#x2207;	To specify gradient	o
+∫	&int;	&#x222b;	To specify integral	o
+∬	&int;	&#x222c;	To specify double integral	o
+∭	&tint;	&#x222d;	To specify triple integral	o
+⨌	&qint;	&#x2a0c;	To specify quadruple integral	o
+∮	&conint;	&#x222e;	To specify contour integral	o
+∲	&cwconint;	&#x2232;	To specify clockwise contour integral	o
+∳	&awconint;	&#x2233;	To specify anticlockwise contour integral	o
+∯	&conint;	&#x222f;	To specify surface integral	o
+∰	&cconint;	&#x2230;	To specify volume integral	o
+∞	&infin;	&#x221e;	To specify infinity	n
+				
+¬	&not;	&#x00ac;	To specify negation	o
+∧	&and;	&#x2227;	To specify logical conjunction	o
+∨	&or;	&#x2228;	To specify logical disjunction	o
+⊻	&veebar;	&#x22bb;	To specify exclusive disjunction	o
+∀	&forall;	&#x2200;	To specify universal quantification	o
+∃	&exist;	&#x2203;	To specify existential quantification	o
+⇒	&rarr;	&#x21d2;	To specify material implication	o
+⇔	&harr;	&#x21d4;	To specify material equivalence	o
+◻	&emptysmallsquare;	&#x25fb;	To specify necessarily	o
+◊	&loz;	&#x25ca;	To specify possibly	o
+⊢	&vdash;	&#x22a2;	To specify provable	o
+⊨	&vdash;	&#x22a8;	To specify entails	o
+∴	&there4;	&#x2234;	To specify therefore	o
+				
+∅	&empty;	&#x2205;	To specify the empty set	n
+∈	&isin;	&#x2208;	To specify the member of set	o
+∉	&notin;	&#x2209;	It specifies not a member of set	o
+⊆	&sube;	&#x2286;	To specify a subset	o
+⊈	&nsube;	&#x2288;	To specify not a subset	o
+⊂	&sub;	&#x2282;	To specify a strict subset	o
+⊄	&nsub;	&#x2284;	To specify not a strict subset	o
+⊇	&supe;	&#x2287;	To specify a superset	o
+⊉	&nsupe;	&#x2289;	To specify not a superset	o
+⊃	&sup;	&#x2283;	To specify strict superset	o
+⊅	&nsup;	&#x2285;	To specify not a strict superset	o
+∩	&cap;	&#x2229;	To specify intersection	o
+∪	&cup;	&#x222a;	To specify union	o
+∖	&ssetmn;	&#x2216;	To specify complement	o
+
+ℂ	&complexes;	&#2102;	DOUBLE-STRUCK CAPITAL C	o
+ℂ	&Copf;	&#2102;	DOUBLE-STRUCK CAPITAL C	o
+ℍ	&Hopf;	&#210D;	DOUBLE-STRUCK CAPITAL H	o
+ℕ	&naturals;	&#2115;	DOUBLE-STRUCK CAPITAL N	o
+ℕ	&Nopf;	&#2115;	DOUBLE-STRUCK CAPITAL N	o
+ℙ	&primes;	&#2119;	DOUBLE-STRUCK CAPITAL P	o
+ℙ	&Popf;	&#2119;	DOUBLE-STRUCK CAPITAL P	o
+ℚ	&rationals;	&#211A;	DOUBLE-STRUCK CAPITAL Q	o
+ℚ	&Qopf;	&#211A;	DOUBLE-STRUCK CAPITAL Q	o
+ℝ	&reals;	&#211D;	DOUBLE-STRUCK CAPITAL R	o
+ℝ	&Ropf;	&#211D;	DOUBLE-STRUCK CAPITAL R	o
+ℤ	&integers;	&#2124;	DOUBLE-STRUCK CAPITAL Z	o
+ℤ	&Zopf;	&#2124;	DOUBLE-STRUCK CAPITAL Z	o
