@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
+import re
 
 class SystemOfEquations():
     def __init__(self, equations=None, filepath=None):
@@ -59,6 +60,12 @@ class SystemOfEquations():
             return True
         except Exception as e:
             return False
+        
+    def add_underscore(self, text):
+        """
+        Add underscores to variable names in the equation string in case of invalid conversion
+        """
+        return re.sub(r'\b([A-Za-z])([A-Za-z0-9]+)(?![_\(])\b', r'\1_\2', text)
 
     def parse_equation(self, equation):
         """
@@ -72,6 +79,7 @@ class SystemOfEquations():
             if "Eq" in line:
                 sympy_equation = line.split(" = ")[1]
                 sympy_equation = sympy_equation.replace('"\n', "")
+                sympy_equation = self.add_underscore(sympy_equation)
                 self.sympy_equations.append(sympify(sympy_equation)) # Store the equation as a SymPy equation
 
     def get_sympy_equations(self):

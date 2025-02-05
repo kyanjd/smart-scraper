@@ -148,6 +148,7 @@ class GeminiPredict():
 
         if mml_list:
             predictions = self.predict_from_list(mml_list)
+            return predictions
 
         if filepath:
             self.filepath = filepath
