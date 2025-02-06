@@ -16,6 +16,10 @@
 # Ignore old folders for main language determination
 /MathScraper/
 /legacy_code/
+archived_legacy_code/mathml2text/
+archived_legacy_code/mml2tex/
+archived_legacy_code/pmathml2cmathml/
+
 
 # Ignore training checkpoints 
 fyp_work/paper_to_equation/T5/t5-base-mathml-to-python/
