@@ -6,12 +6,18 @@ from Generation.Equation_BaseDataset import Equation, BaseDataset
 from Postprocessing.SOE_EquationGraph import SystemOfEquations, EquationGraph
 from Scraping.Scraper import Scraper
 
+# Input parameters
 doi = "10.1016/j.jmatprotec.2017.04.005"
 elsevier_api_key = os.getenv("ELSEVIER_API_KEY")
 gemini_api_key = os.getenv("GEMINI_API_KEY") 
 model_name = "tunedModels/mmltopython4-f3fuppiemnq9"
+
+# Input and format data
 column_names = ["P", "h"]
-data_filepath = "Data/p20.csv"
+data_filepath = "src/paper_to_equation/Data/p20.csv"
+p20_df = pd.read_csv(data_filepath, header=None, names=column_names)
+P_list = pd.to_numeric(p20_df["P"]).tolist()
+h_list_ref = pd.to_numeric(p20_df["h"]).tolist()
 
 def main():
     # 1. Scraping journal data 
@@ -24,9 +30,6 @@ def main():
     full_equations = predictor.generate_predictions(mml_list=mathml_equations)
 
     # 3. Solving system of equations
-    p20_df = pd.read_csv(data_filepath, header=None, names=column_names)
-    P_list = pd.to_numeric(p20_df["P"]).tolist()
-    h_list_ref = pd.to_numeric(p20_df["h"]).tolist()
     solver = SystemOfEquations(equations=full_equations)
     solutions = solver.solve_system(const_dict=const_dict,
                                     independent_vals=P_list,
