@@ -63,6 +63,8 @@ class Equation:
         rhs = self.generate_expression()
         self.equation = Eq(lhs, rhs) # Create an attribute containing a SymPy equation in the form of lhs = rhs
     
+    
+
     def to_python(self):
         self.py = sp.printing.python(self.equation) # Convert the SymPy expression to Python code
 
