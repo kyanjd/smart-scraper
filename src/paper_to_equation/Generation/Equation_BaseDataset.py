@@ -63,8 +63,33 @@ class Equation:
         rhs = self.generate_expression()
         self.equation = Eq(lhs, rhs) # Create an attribute containing a SymPy equation in the form of lhs = rhs
     
-    
+    def generate_sum(self):
+        lhs = random.choice(self.vars) # Choose a random variable for the left-hand side
+        
+        expression = self.generate_expression()
+        rhs = Sum(expression, (random.choice(self.vars), random.choice(self.nums), random.choice(self.nums + self.vars))) # Create a summation on the right-hand side
+        
+        self.equation = Eq(lhs, rhs) # Create an attribute containing a SymPy sum equation in the form of lhs = rhs
 
+    def generate_derivative(self):
+        lhs = random.choice(self.vars) # Choose a random variable for the left-hand side
+        expression = self.generate_expression()
+        expression_vars = list(expression.free_symbols)
+        
+        rhs = Derivative(expression, random.choice(expression_vars)) # Create a derivative on the right-hand side
+
+        self.equation = Eq(lhs, rhs) # Create an attribute containing a SymPy derivative equation in the form of lhs = rhs
+
+    def generate_integral(self):
+        lhs = random.choice(self.vars)
+        expression = self.generate_expression()
+        expression_vars = list(expression.free_symbols)
+        
+        indefinite_rhs = Integral(expression, random.choice(expression_vars)) # Create an integral on the right-hand side
+        definite_rhs = Integral(expression, (random.choice(expression_vars), random.choice(self.nums), random.choice(self.nums))) # Create a definite integral on the right-hand side
+
+        self.equation = Eq(lhs, random.choice((indefinite_rhs, definite_rhs))) # Create an attribute containing a SymPy integral equation in the form of lhs = rhs
+    
     def to_python(self):
         self.py = sp.printing.python(self.equation) # Convert the SymPy expression to Python code
 
@@ -88,6 +113,7 @@ class Equation:
         mml = self.mml
         mml = mml.replace("<mo>&InvisibleTimes;</mo>", "") # Remove invisible times operator to match scraped MathML
         mml = mml.replace("<mi>&ExponentialE;</mi>", "<mtext>exp</mtext>") # Replace exponential e with exp to match scraped MathML
+        mml = mml.replace("<mo>&dd;</mo>", "<mi>d</mi>") # Replace differential d with d to match scraped MathML
         parser = etree.XMLParser(remove_blank_text=True) # Create an XML parser that removes blank text
         root = etree.fromstring(mml, parser) # Parse the MathML string into an XML element tree
 
@@ -116,7 +142,7 @@ class Equation:
         display(Markdown(f"$$ {latex(self.equation)} $$")) # Display the equation in LaTeX format
 
     def generate(self):
-        self.generate_equation()
+        random.choices((self.generate_equation, self.generate_sum, self.generate_integral, self.generate_derivative), weights=[40, 20, 20, 20])[0]() # Choose a random equation type and generate it
         self.to_python()
         self.format_python()
         self.to_mathml()
