@@ -171,8 +171,8 @@ class BaseDataset:
                 eg = Equation()
                 try: # Skip errors
                     py, mml = eg.generate()
-                    mml.replace("\n", "\\n")
-                    py.replace("\n", "\\n")
+                    # mml.replace("\n", "\\n")
+                    # py.replace("\n", "\\n")
                     self.dataset.append({columns[0]: mml, columns[1]: py}) # Format here
                     pbar.total = self.num
                     pbar.update(1)
