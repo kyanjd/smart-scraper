@@ -1,6 +1,8 @@
 import pandas as pd
 import sympy as sp
+import os
 from sympy import *
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import random
 from IPython.display import Markdown
 from lxml import etree
@@ -157,19 +159,44 @@ class BaseDataset:
     def get_columns(self):
         raise NotImplementedError("Subclasses must implement this method")
     
-    def create_dataset(self):
-        columns = self.get_columns()
+    def _get_equation(self):
 
+        try:
+            columns = self.get_columns()
+            eq = Equation()
+            py, mml = eq.generate()
+            return {columns[0]: mml, columns[1]: py}
+        except:
+            return None
+        
+    def create_dataset(self):
+        mathml_py_dicts = []
         with tqdm(desc="Generating dataset") as pbar:
-            while len(self.dataset) < self.num:
-                eg = Equation()
-                try:
-                    py, mml = eg.generate()
-                    self.dataset.append({columns[0]: mml, columns[1]: py})
+            while len(mathml_py_dicts) < self.num:
+                result = self._get_equation()
+                if result:
+                    mathml_py_dicts.append(result)
                     pbar.total = self.num
                     pbar.update(1)
-                except:
-                    continue
+        
+        self.dataset.extend(mathml_py_dicts)
+
+    def create_dataset_mthread(self):
+        n_cores = os.cpu_count() # Get the number of CPU cores on current machine
+        n_workers = min(self.num, n_cores - 1) # Leave one core for the main process
+        with ThreadPoolExecutor(max_workers=n_workers) as executor: # Create a pool of workers for multiprocessing
+            futures = [executor.submit(self._get_equation) for _ in range(self.num)] # Submit the tasks to the workers
+
+            mathml_py_dicts = []
+            with tqdm(desc="Generating dataset") as pbar:
+                for future in as_completed(futures):
+                    result = future.result()
+                    if result:
+                        mathml_py_dicts.append(result)
+                        pbar.total=self.num
+                        pbar.update(1)
+                
+        self.dataset.extend(mathml_py_dicts)
         
     def get_dataset(self):
         return self.dataset
