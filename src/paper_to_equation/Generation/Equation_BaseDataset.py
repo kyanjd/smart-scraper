@@ -150,13 +150,32 @@ class Equation:
         return self.py, self.mml
 
 class BaseDataset:
-    def __init__(self, num, filepath):
+    def __init__(self, num):
         self.num = num
-        self.filepath = filepath
         self.dataset = []
     
     def get_columns(self):
         raise NotImplementedError("Subclasses must implement this method")
+    
+    def create_dataset(self):
+        columns = self.get_columns()
+
+        with tqdm(desc="Generating dataset") as pbar:
+            while len(self.dataset) < self.num:
+                eg = Equation()
+                try:
+                    py, mml = eg.generate()
+                    self.dataset.append({columns[0]: mml, columns[1]: py})
+                    pbar.total = self.num
+                    pbar.update(1)
+                except:
+                    continue
+        
+    def get_dataset(self):
+        return self.dataset
+    
+    def clear_dataset(self):
+        self.dataset.clear()
     
     def create_json(self):
         columns = self.get_columns()
@@ -166,18 +185,7 @@ class BaseDataset:
         except FileNotFoundError:
             existing_data = [] # Create an empty list otherwise
 
-        with tqdm(desc="Generating dataset") as pbar:
-            while len(self.dataset) < self.num: # Add num new equations to the list in dictionary format
-                eg = Equation()
-                try: # Skip errors
-                    py, mml = eg.generate()
-                    # mml.replace("\n", "\\n")
-                    # py.replace("\n", "\\n")
-                    self.dataset.append({columns[0]: mml, columns[1]: py}) # Format here
-                    pbar.total = self.num
-                    pbar.update(1)
-                except:
-                    continue        
+        self.create_dataset() # Make the dataset with num equations   
                 
         existing_data.extend(self.dataset)
         with open(self.filepath, "w", encoding="utf-8") as f:
@@ -190,22 +198,16 @@ class BaseDataset:
         except FileNotFoundError:
             existing_data = pd.DataFrame(columns=columns) # Create an empty df otherwise
 
-        with tqdm(desc="Generating dataset") as pbar:
-            while len(self.dataset) < self.num: # Add num new equations to the list in dictionary format
-                eg = Equation()
-                try: # Skip errors
-                    py, mml = eg.generate()
-                    self.dataset.append({columns[0]: mml, columns[1]: py}) # Format here
-                    pbar.total = self.num
-                    pbar.update(1)
-                except:
-                    continue
+        self.create_dataset() # Make the dataset with num equations
         
         new_data = pd.DataFrame(self.dataset)
         existing_data = pd.concat([existing_data, new_data])
         existing_data.to_csv(self.filepath, index=False)
 
-    def create(self):
+    def create(self, filepath=None):
+        if filepath:
+            self.filepath = filepath
+
         if self.filepath.split(".")[-1] == "json":
             self.create_json()
         elif self.filepath.split(".")[-1] == "csv":
