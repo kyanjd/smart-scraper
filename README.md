@@ -8,11 +8,12 @@ To-Do (n = priority / 5):
 - ~~develop dependency graph for finding the equations neededed to solve a top level equation (2)~~
 - fix the solve rhs metric for imaginary equation solutions (2)
 - ~~extract constants from paper, must be done on campus wifi (2)~~
-- finish SOE class for recreating python file results (3)
+- ~~finish SOE class for recreating python file results (3)~~
 - create utils class to abstract file I/O methods (1)
-- sort out returns vs modifying internal attributes (1)
+- ~~sort out returns vs modifying internal attributes (1)~~
 - add new docstrings to used functions
-- fix reduce systems (2)
+- ~~fix reduce systems (2)~~
+- evaluate the usage of sentencepiece vs BPE for tokenizer with T5
 
 Process:
 - input a DOI referring to a tribology paper
