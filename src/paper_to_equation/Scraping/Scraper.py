@@ -26,6 +26,7 @@ class Scraper:
         response = requests.get(f"https://api.elsevier.com/content/article/doi/{self.doi}?APIKey={self.api_key}") # Make request to Elsevier API
         if response.status_code == 200:
             print("Request successful \n")
+            self.response = response
             self.full_text = response.text 
         else:
             raise Exception(f"Request failed with status code: {response.status_code} \n")
