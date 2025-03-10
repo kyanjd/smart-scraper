@@ -14,6 +14,7 @@ To-Do (n = priority / 5):
 - add new docstrings to used functions
 - ~~fix reduce systems (2)~~
 - evaluate the usage of sentencepiece vs BPE for tokenizer with T5
+- fix tokenizer performance from hub not retaining tags
 
 Process:
 - input a DOI referring to a tribology paper
