@@ -10,6 +10,7 @@ import json
 from IPython.display import display
 from tqdm import tqdm
 import re
+import csv
 
 class Equation:
     # Class attributes (only instantiated the first time)
@@ -204,7 +205,16 @@ class BaseDataset:
     def clear_dataset(self):
         self.dataset.clear()
     
-    def create_json(self):
+    def load_json(self, filepath: str):
+        with open(filepath, "r", encoding="utf-8") as f:
+            self.dataset = json.load(f)  # Update attribute from read file
+
+    def load_csv(self, filepath: str):
+        with open(filepath, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f, quotechar='"', delimiter=",")
+            self.dataset = [row for row in reader]  # Update attribute from read file
+    
+    def _create_json(self):
         columns = self.get_columns()
         try: # Check to see if there is already data at the filepath
             with open(self.filepath, "r") as f:
@@ -218,7 +228,7 @@ class BaseDataset:
         with open(self.filepath, "w", encoding="utf-8") as f:
             json.dump(existing_data, f, ensure_ascii=False, indent=4)
 
-    def create_csv(self):
+    def _create_csv(self):
         columns = self.get_columns()
         try: # Check to see if there is already data at the filepath
             existing_data = pd.read_csv(self.filepath) # Load it if it exists
@@ -236,9 +246,9 @@ class BaseDataset:
             self.filepath = filepath
 
         if self.filepath.split(".")[-1] == "json":
-            self.create_json()
+            self._create_json()
         elif self.filepath.split(".")[-1] == "csv":
-            self.create_csv()
+            self._create_csv()
         else:
             print("Invalid file format. Please use .json or .csv")
 
