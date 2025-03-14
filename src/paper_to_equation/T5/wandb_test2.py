@@ -1,10 +1,12 @@
 import wandb
-
 import os
 import numpy as np
+import torch
 from datasets import load_dataset
 from transformers import TrainingArguments, Trainer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+print("Using GPU" if torch.cuda.is_available() else "Using CPU")
 
 wandb_api_key = os.environ.get("WANDB_API_KEY")
 wandb.login(key=wandb_api_key)
@@ -32,7 +34,7 @@ small_eval_dataset = small_train_dataset.map(tokenize_function, batched=True)
 model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=5)
 
 # set the wandb project where this run will be logged
-os.environ["WANDB_PROJECT"]="my-awesome-project"
+os.environ["WANDB_PROJECT"]="test2"
 
 # save your trained model checkpoint to wandb
 os.environ["WANDB_LOG_MODEL"]="checkpoint"
