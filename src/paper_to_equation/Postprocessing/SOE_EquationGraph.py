@@ -27,6 +27,8 @@ class SystemOfEquations():
             else:
                 self.parse_equation(eq) 
 
+        self.ode = any(eq.has(Derivative) for eq in self.sympy_equations) # Check if any equation is an ODE
+
     def _extract_equations(self):
         """
         Store the equations in a list of strings
@@ -61,7 +63,7 @@ class SystemOfEquations():
         except Exception as e:
             return False
         
-    def add_underscore(self, text):
+    def _add_underscore(self, text):
         """
         Add underscores to variable names in the equation string in case of invalid conversion
         """
@@ -79,7 +81,7 @@ class SystemOfEquations():
             if "Eq" in line:
                 sympy_equation = line.split(" = ")[1]
                 sympy_equation = sympy_equation.replace('"\n', "")
-                sympy_equation = self.add_underscore(sympy_equation)
+                sympy_equation = self._add_underscore(sympy_equation)
                 self.sympy_equations.append(sympify(sympy_equation)) # Store the equation as a SymPy equation
 
     def get_sympy_equations(self):
@@ -129,15 +131,39 @@ class SystemOfEquations():
         self.symbols = self.symbols - set(consts)
         return self.symbols
     
-    def solve_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int):
+    def solve_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int,
+                     target_initial=None, t_initial=None, t_final=None, dt=None):
+        """
+        Solve the system of equations for the target variable
+        
+        Args:
+            const_dict (dict): Dictionary of constants and their values
+            independent_vals (list): List of values for the independent variable
+            independent_symbol (str): The symbol for the independent variable
+            target_symbol (str): The symbol for the target variable
+            equation_number (int): The equation number to solve from the paper
+
+        Returns:
+            y_pred (list): List of predicted values for the target variable
+        """
+        if self.ode:
+            self.solve_ode_system(const_dict, independent_vals, independent_symbol, target_symbol, equation_number,
+                                  target_initial, t_initial, t_final, dt)
+        else:
+            self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
+            y_pred = []
+            for x in tqdm(independent_vals, desc='Generating Curve'):
+                const_dict[independent_symbol] = x
+                exprs = self.reduce_system(equation_number, const_dict)
+                sol = solve(exprs)[0]
+                y_pred.append(sol[Symbol(target_symbol)])
+            return y_pred
+        
+    def solve_ode_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int,
+                         target_initial=None, t_initial=None, t_final=None, dt=None):
         self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
         y_pred = []
-        for x in tqdm(independent_vals, desc='Generating Curve'):
-            const_dict[independent_symbol] = x
-            exprs = self.reduce_system(equation_number, const_dict)
-            sol = solve(exprs)[0]
-            y_pred.append(sol[Symbol(target_symbol)])
-        return y_pred
+        pass
     
     def calculate_percent_error(self, y_pred, y_true):
         y_pred = np.array(y_pred)
