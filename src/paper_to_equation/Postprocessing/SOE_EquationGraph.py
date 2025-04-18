@@ -132,7 +132,7 @@ class SystemOfEquations():
         return self.symbols
     
     def solve_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int,
-                     target_initial=None, t_initial=None, t_final=None, dt=None):
+                     target_initial=None, t_initial=None, t_final=None, dt=None): # Switch to kwargs?
         """
         Solve the system of equations for the target variable
         
@@ -147,7 +147,7 @@ class SystemOfEquations():
             y_pred (list): List of predicted values for the target variable
         """
         if self.ode:
-            self.solve_ode_system(const_dict, independent_vals, independent_symbol, target_symbol, equation_number,
+            return self.solve_ode_system(const_dict, independent_vals, independent_symbol, target_symbol, equation_number,
                                   target_initial, t_initial, t_final, dt)
         else:
             self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
@@ -162,8 +162,31 @@ class SystemOfEquations():
     def solve_ode_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int,
                          target_initial=None, t_initial=None, t_final=None, dt=None):
         self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
-        y_pred = []
-        pass
+        ode_expr = next(eq for eq in self.sympy_equations if eq.has(Derivative)) # Get the ODE equation
+        exprs = [eq for eq in self.sympy_equations if eq != ode_expr] # Get the other equations
+
+        diff_sym = ode_expr.lhs.free_symbols.pop() # Get the symbol for the derivative
+        rhs = ode_expr.rhs
+
+        t = np.arange(t_initial, t_final, dt) # Time array
+        diff_vals = np.zeros(len(t)) # Array for the derivative values
+        y_pred = np.zeros(len(t)) # Array for the predicted values
+
+        # Initial conditions/solution
+        diff_vals[0] = target_initial # Set the initial value for the derivative
+        subs_initial = {diff_sym: target_initial, **const_dict} # Substitute the initial values into the equations
+        sol_initial = solve([eq.subs(subs_initial) for eq in exprs], target_symbol) # Solve the equations for the target variable
+        y_pred[0] = sol_initial[Symbol(target_symbol)] # Set the initial value for the target variable
+
+        # Forward Euler time stepping
+        for i in range(len(t)-1):
+            d_dt = float(rhs.subs({diff_sym: diff_vals[i], **const_dict})) 
+            diff_vals[i+1] = diff_vals[i] + d_dt * dt # Forward Euler step
+
+            subs_i = {diff_sym: diff_vals[i+1], **const_dict} 
+            sol_i = solve([eq.subs(subs_i) for eq in exprs], target_symbol) 
+            y_pred[i+1] = sol_i[Symbol(target_symbol)] # Update the predicted value for the target variable
+        return y_pred
     
     def calculate_percent_error(self, y_pred, y_true):
         y_pred = np.array(y_pred)
