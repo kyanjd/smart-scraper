@@ -27,6 +27,8 @@ class SystemOfEquations():
             else:
                 self.parse_equation(eq) 
 
+        self.ode = any(eq.has(Derivative) for eq in self.sympy_equations) # Check if any equation is an ODE
+
     def _extract_equations(self):
         """
         Store the equations in a list of strings
@@ -40,7 +42,7 @@ class SystemOfEquations():
         Getter for the equation list
         """
         if not self.str_equations:
-            self.extract_equations()
+            self._extract_equations()
 
         return self.str_equations
 
@@ -61,7 +63,7 @@ class SystemOfEquations():
         except Exception as e:
             return False
         
-    def add_underscore(self, text):
+    def _add_underscore(self, text):
         """
         Add underscores to variable names in the equation string in case of invalid conversion
         """
@@ -79,7 +81,7 @@ class SystemOfEquations():
             if "Eq" in line:
                 sympy_equation = line.split(" = ")[1]
                 sympy_equation = sympy_equation.replace('"\n', "")
-                sympy_equation = self.add_underscore(sympy_equation)
+                sympy_equation = self._add_underscore(sympy_equation)
                 self.sympy_equations.append(sympify(sympy_equation)) # Store the equation as a SymPy equation
 
     def get_sympy_equations(self):
@@ -129,72 +131,62 @@ class SystemOfEquations():
         self.symbols = self.symbols - set(consts)
         return self.symbols
     
-    def solve_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int):
+    def solve_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int,
+                     target_initial=None, t_initial=None, t_final=None, dt=None): # Switch to kwargs?
+        """
+        Solve the system of equations for the target variable
+        
+        Args:
+            const_dict (dict): Dictionary of constants and their values
+            independent_vals (list): List of values for the independent variable
+            independent_symbol (str): The symbol for the independent variable
+            target_symbol (str): The symbol for the target variable
+            equation_number (int): The equation number to solve from the paper
+
+        Returns:
+            y_pred (list): List of predicted values for the target variable
+        """
+        if self.ode:
+            return self.solve_ode_system(const_dict, independent_vals, independent_symbol, target_symbol, equation_number,
+                                  target_initial, t_initial, t_final, dt)
+        else:
+            self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
+            y_pred = []
+            for x in tqdm(independent_vals, desc='Generating Curve'):
+                const_dict[independent_symbol] = x
+                exprs = self.reduce_system(equation_number, const_dict)
+                sol = solve(exprs)[0]
+                y_pred.append(sol[Symbol(target_symbol)])
+            return y_pred
+        
+    def solve_ode_system(self, const_dict, independent_vals: list, independent_symbol: str, target_symbol: str, equation_number: int,
+                         target_initial=None, t_initial=None, t_final=None, dt=None):
         self.sympy_equations = self._remove_duplicates(equation_number, self.sympy_equations)
-        y_pred = []
-        for x in tqdm(independent_vals, desc='Generating Curve'):
-            const_dict[independent_symbol] = x
-            exprs = self.reduce_system(equation_number, const_dict)
-            sol = solve(exprs)[0]
-            y_pred.append(sol[Symbol(target_symbol)])
+        ode_expr = next(eq for eq in self.sympy_equations if eq.has(Derivative)) # Get the ODE equation
+        exprs = [eq for eq in self.sympy_equations if eq != ode_expr] # Get the other equations
+
+        diff_sym = ode_expr.lhs.free_symbols.pop() # Get the symbol for the derivative
+        rhs = ode_expr.rhs
+
+        t = np.arange(t_initial, t_final, dt) # Time array
+        diff_vals = np.zeros(len(t)) # Array for the derivative values
+        y_pred = np.zeros(len(t)) # Array for the predicted values
+
+        # Initial conditions/solution
+        diff_vals[0] = target_initial # Set the initial value for the derivative
+        subs_initial = {diff_sym: target_initial, **const_dict} # Substitute the initial values into the equations
+        sol_initial = solve([eq.subs(subs_initial) for eq in exprs], target_symbol) # Solve the equations for the target variable
+        y_pred[0] = sol_initial[Symbol(target_symbol)] # Set the initial value for the target variable
+
+        # Forward Euler time stepping
+        for i in range(len(t)-1):
+            d_dt = float(rhs.subs({diff_sym: diff_vals[i], **const_dict})) 
+            diff_vals[i+1] = diff_vals[i] + d_dt * dt # Forward Euler step
+
+            subs_i = {diff_sym: diff_vals[i+1], **const_dict} 
+            sol_i = solve([eq.subs(subs_i) for eq in exprs], target_symbol) 
+            y_pred[i+1] = sol_i[Symbol(target_symbol)] # Update the predicted value for the target variable
         return y_pred
-
-    
-    # def _solve_system(self, equations, x_vals, target):
-    #     k_s = 0.14
-    #     k_t = 0.0315
-    #     k_l = 0.024
-    #     Rs = 3.4e-07
-    #     Rt = 9.6e-07
-    #     h_a = 0.8
-    #     σ_U = 21.0
-    #     α = 0.000201
-    #     λ = 6.05
-    #     β = 0.00011
-    #     γ = 200000.0
-    #     δ = 1.5e-5
-
-    #     k = 1
-    #     p = 1
-    #     H = 1
-    #     θ = 1
-    #     σ = 1
-    #     K = 1
-    #     C = 1
-    #     A = 1
-    #     B = 1
-    #     k_f = 1
-    #     k_w = 1
-    #     h_f = 1
-    #     h_g = 1
-
-    #     # Variables
-    #     h = Symbol("h")
-    #     h_c = Symbol("h_c")
-    #     K_st = Symbol("K_st")
-    #     R = Symbol("R")
-    #     N_P = Symbol("N_P")
-    #     h_l = Symbol("h_l")
-    #     K_stl = Symbol("K_stl")
-    #     N_L = Symbol("N_L")
-        
-        
-        
-    #     y_pred = []
-    #     for x in tqdm(x_vals, desc='Generating Curve'):
-    #         P = x
-    #         exprs = [Eq(h, h_a + h_c + h_l), 
-    #         Eq(h_c, K_st*N_P*α/R), 
-    #         Eq(K_st, 2/(1/k_t + 1/k_s)), 
-    #         Eq(R, sqrt(Rs**2 + Rt**2)), 
-    #         Eq(N_P, 1 - exp(-P*λ/σ_U)), 
-    #         Eq(h_l, K_stl*N_L*β/R), 
-    #         Eq(K_stl, 3/(1/k_t + 1/k_s + 1/k_l)), 
-    #         Eq(N_L, 1 - exp(-γ*δ))]
-    #         sol = solve(exprs)[0] # equations
-    #         # print(sol)
-    #         y_pred.append(sol[target])
-    #     return y_pred
     
     def calculate_percent_error(self, y_pred, y_true):
         y_pred = np.array(y_pred)
