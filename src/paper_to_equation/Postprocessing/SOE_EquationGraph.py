@@ -1,4 +1,6 @@
 from sympy import *
+from sympy.parsing.sympy_parser import parse_expr
+from sympy.core.function import AppliedUndef
 from collections import defaultdict, deque
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -48,19 +50,15 @@ class SystemOfEquations():
 
     def validate(self, equation):
         """
-        Check if the equation string is valid SymPy Python code
-
-        Args:
-            equation (str): The equation string to validate
-
-        Returns:
-            True if the equation is valid
-            False if the equation is invalid
+        Returns True if the string is a valid SymPy expression with only
+        defined functions or operators. Flags undefined function calls.
         """
         try:
-            exec(equation) # Execute the equation string as code
+            expr = parse_expr(equation, evaluate=False)
+            if expr.has(AppliedUndef):
+                return False
             return True
-        except Exception as e:
+        except Exception:
             return False
         
     def _add_underscore(self, text):
