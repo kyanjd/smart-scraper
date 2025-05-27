@@ -292,4 +292,3 @@ class EquationGraph():
         if save:
             plt.savefig("Figures/dependency_graph.pdf")
         plt.show()
-
