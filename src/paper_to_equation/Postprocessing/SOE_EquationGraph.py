@@ -23,11 +23,16 @@ class SystemOfEquations():
             self.str_equations = []
             self._extract_equations()       
 
+        # for eq in self.str_equations:
+        #     if not self.validate(eq):
+        #         raise Exception(f"Invalid equation: {eq}")
+        #     else:
+        #         self.parse_equation(eq) 
+
         for eq in self.str_equations:
-            if not self.validate(eq):
-                raise Exception(f"Invalid equation: {eq}")
-            else:
-                self.parse_equation(eq) 
+            self.parse_equation(eq) 
+            if not self.validate(str(self.sympy_equations[-1])):
+                raise Exception(f"Invalid equation: {self.sympy_equations[-1]}")
 
         self.ode = any(eq.has(Derivative) for eq in self.sympy_equations) # Check if any equation is an ODE
 
