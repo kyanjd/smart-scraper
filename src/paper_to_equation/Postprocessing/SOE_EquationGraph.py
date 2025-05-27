@@ -202,8 +202,8 @@ class SystemOfEquations():
         plt.plot(x, error)
         plt.show()
 
-    def plot_dependency_graph(self):
-        self.graph.plot_graph()
+    def plot_dependency_graph(self, save=False):
+        self.graph.plot_graph(save=save)
     
     def solve_test(self, target):
         symbol_list = {"a", "b", "c"}
@@ -265,7 +265,7 @@ class EquationGraph():
         dependencies = self.BFS_for_vars() # Get all variables the target variable depends on
         return [self.var_equation_map[var] for var in dependencies] # Return the equations needed to be solved for the target variable
     
-    def plot_graph(self):
+    def plot_graph(self, save=False):
         """
         Visualise the dependency graph
         """
@@ -284,5 +284,7 @@ class EquationGraph():
         plt.title(f"{self.target} Dependency Graph")
         nx.draw_networkx(G, pos, with_labels=True, node_size=5000, node_color="skyblue", font_size=10, font_weight="bold")
         plt.axis("off")
+        if save:
+            plt.savefig("Figures/dependency_graph.pdf")
         plt.show()
 
