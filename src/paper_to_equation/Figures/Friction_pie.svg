@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2025-06-02T20:32:18.502498</dc:date>
+    <dc:date>2025-06-02T20:40:12.981518</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -59,11 +59,21 @@ L 240.581245 182.186966
 z
 " style="fill: #aec6cf; stroke: #000000; stroke-linejoin: miter"/>
    </g>
+   <g id="patch_4">
+    <path d="M 262.764 70.92 
+Q 371.772 98.64 480.78 126.36 
+" style="fill: none; stroke: #808080; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 262.764 292.68 
+Q 371.772 264.96 480.78 237.24 
+" style="fill: none; stroke: #808080; stroke-width: 2; stroke-linecap: round"/>
+   </g>
    <g id="matplotlib.axis_1"/>
    <g id="matplotlib.axis_2"/>
   </g>
   <g id="axes_2">
-   <g id="patch_4">
+   <g id="patch_6">
     <path d="M 456.403441 162.838403 
 C 452.794377 172.754226 452.090236 183.497343 454.374149 193.799412 
 C 456.658063 204.10148 461.836469 213.540468 469.297999 221.001999 
@@ -75,9 +85,9 @@ C 564.648719 176.119874 562.548345 165.560575 557.675882 156.20066
 C 552.80342 146.840746 545.358475 139.063654 536.220004 133.787554 
 L 508.5 181.8 
 z
-" style="fill: url(#hac152a9d30); stroke: #000000; stroke-linejoin: miter"/>
+" style="fill: url(#h6b8a01c955); stroke: #000000; stroke-linejoin: miter"/>
    </g>
-   <g id="patch_5">
+   <g id="patch_7">
     <path d="M 536.220004 133.787554 
 C 527.792687 128.922039 518.231032 126.360001 508.500004 126.36 
 C 498.768975 126.359999 489.207321 128.922036 480.780002 133.78755 
@@ -85,7 +95,7 @@ L 508.5 181.8
 z
 " style="fill: #90caf9; stroke: #000000; stroke-linejoin: miter"/>
    </g>
-   <g id="patch_6">
+   <g id="patch_8">
     <path d="M 480.780002 133.78755 
 C 475.179357 137.021084 470.187449 141.209792 466.030498 146.163853 
 C 461.873547 151.117914 458.61531 156.761345 456.403442 162.838401 
@@ -93,22 +103,12 @@ L 508.5 181.8
 z
 " style="fill: #42a5f5; stroke: #000000; stroke-linejoin: miter"/>
    </g>
-   <g id="patch_7">
-    <path d="M 480.78 126.36 
-Q 308.584066 135.311879 136.388133 144.263758 
-" style="fill: none; stroke: #808080; stroke-width: 2; stroke-linecap: round"/>
-   </g>
-   <g id="patch_8">
-    <path d="M 480.78 237.24 
-Q 307.388274 224.994819 133.996549 212.749637 
-" style="fill: none; stroke: #808080; stroke-width: 2; stroke-linecap: round"/>
-   </g>
    <g id="matplotlib.axis_3"/>
    <g id="matplotlib.axis_4"/>
   </g>
  </g>
  <defs>
-  <pattern id="hac152a9d30" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+  <pattern id="h6b8a01c955" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
    <rect x="0" y="0" width="73" height="73" fill="#d3d3d3"/>
    <path d="M -36 36 
 L 36 -36 
