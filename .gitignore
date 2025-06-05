@@ -23,8 +23,8 @@ archived_legacy_code/pmathml2cmathml/
 
 # Ignore training checkpoints 
 fyp_work/paper_to_equation/T5/t5-base-mathml-to-python/
-src/paper_to_equation/T5/t5-base-mathml-to-python/
-src/paper_to_equation/fig.ipynb
+src/T5/t5-base-mathml-to-python/
+src/fig.ipynb
 
 # Ignore cache
 __pycache__/
