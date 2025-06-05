@@ -14,7 +14,7 @@ model_name = "tunedModels/mmltopython4-f3fuppiemnq9"
 
 # Input and format data
 column_names = ["P", "h"]
-data_filepath = "src/paper_to_equation/Data/p20.csv"
+data_filepath = "src/Data/p20.csv"
 p20_df = pd.read_csv(data_filepath, header=None, names=column_names)
 P_list = pd.to_numeric(p20_df["P"]).tolist()
 h_list_ref = pd.to_numeric(p20_df["h"]).tolist()
