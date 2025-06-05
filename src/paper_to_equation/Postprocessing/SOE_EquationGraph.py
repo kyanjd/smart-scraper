@@ -1,4 +1,6 @@
 from sympy import *
+from sympy.parsing.sympy_parser import parse_expr
+from sympy.core.function import AppliedUndef
 from collections import defaultdict, deque
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -21,11 +23,16 @@ class SystemOfEquations():
             self.str_equations = []
             self._extract_equations()       
 
+        # for eq in self.str_equations:
+        #     if not self.validate(eq):
+        #         raise Exception(f"Invalid equation: {eq}")
+        #     else:
+        #         self.parse_equation(eq) 
+
         for eq in self.str_equations:
-            if not self.validate(eq):
-                raise Exception(f"Invalid equation: {eq}")
-            else:
-                self.parse_equation(eq) 
+            self.parse_equation(eq) 
+            if not self.validate(str(self.sympy_equations[-1])):
+                raise Exception(f"Invalid equation: {self.sympy_equations[-1]}")
 
         self.ode = any(eq.has(Derivative) for eq in self.sympy_equations) # Check if any equation is an ODE
 
@@ -48,19 +55,15 @@ class SystemOfEquations():
 
     def validate(self, equation):
         """
-        Check if the equation string is valid SymPy Python code
-
-        Args:
-            equation (str): The equation string to validate
-
-        Returns:
-            True if the equation is valid
-            False if the equation is invalid
+        Returns True if the string is a valid SymPy expression with only
+        defined functions or operators. Flags undefined function calls.
         """
         try:
-            exec(equation) # Execute the equation string as code
+            expr = parse_expr(equation, evaluate=False)
+            if expr.has(AppliedUndef):
+                return False
             return True
-        except Exception as e:
+        except Exception:
             return False
         
     def _add_underscore(self, text):
@@ -116,7 +119,7 @@ class SystemOfEquations():
             A list of SymPy equations that are necessary to solve the target equation
         """
         constants_symbol_dict = {Symbol(k.split(" ")[0]): v for k, v in const_dict.items()} # Convert each constant to a symbol with a value, removing the units
-        constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
+        # constants_symbol_dict[Symbol("δ")] = 1.5e-5 # WIP hardcoded for now
         expressions = [eq.subs(constants_symbol_dict) for eq in self.sympy_equations]
         self.graph = EquationGraph(expressions)
         reduced_equations = self.graph.get_system_of_equations()
@@ -204,8 +207,8 @@ class SystemOfEquations():
         plt.plot(x, error)
         plt.show()
 
-    def plot_dependency_graph(self):
-        self.graph.plot_graph()
+    def plot_dependency_graph(self, save=False):
+        self.graph.plot_graph(save=save)
     
     def solve_test(self, target):
         symbol_list = {"a", "b", "c"}
@@ -267,7 +270,7 @@ class EquationGraph():
         dependencies = self.BFS_for_vars() # Get all variables the target variable depends on
         return [self.var_equation_map[var] for var in dependencies] # Return the equations needed to be solved for the target variable
     
-    def plot_graph(self):
+    def plot_graph(self, save=False):
         """
         Visualise the dependency graph
         """
@@ -286,5 +289,6 @@ class EquationGraph():
         plt.title(f"{self.target} Dependency Graph")
         nx.draw_networkx(G, pos, with_labels=True, node_size=5000, node_color="skyblue", font_size=10, font_weight="bold")
         plt.axis("off")
+        if save:
+            plt.savefig("Figures/dependency_graph.pdf")
         plt.show()
-
