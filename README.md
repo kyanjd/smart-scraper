@@ -2,7 +2,8 @@ This repository contains the source code for the project entitled:
 
 # Automated Implementation of Boundary Condition Research Using Large Langauge Models (LLMs)
 
-'''smart-scraper/
+'''text
+smart-scraper/
 ├── .env                      # Environment variables
 ├── .gitattributes            # Git attributes file
 ├── .gitignore                # Git ignore file
@@ -81,4 +82,4 @@ This repository contains the source code for the project entitled:
     │   └── Scraper.py
     │
     └── T5/                   # T5 model integration
-        └── colab_training_script.ipynb'''
+        └── colab_training_script.ipynb
