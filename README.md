@@ -2,7 +2,7 @@ This repository contains the source code for the project entitled:
 
 # Automated Implementation of Boundary Condition Research Using Large Langauge Models (LLMs)
 
-'''text
+```text
 smart-scraper/
 ├── .env                      # Environment variables
 ├── .gitattributes            # Git attributes file
@@ -24,36 +24,33 @@ smart-scraper/
 │   ├── paper_url.txt
 │   ├── README.md
 │   ├── requirements.txt
-│   ├── scraper.py            # Original scraper implementation
+│   ├── scraper.py            # Original MathScraper implementation
 │   ├── template.py
 │   ├── test.py
 │   ├── figures/
 │   ├── scraped_python/       # Generated Python code from scraping
 │   └── scraped_txt/          # Scraped text content
 │
-├── fyp_work/                 # Final year project work
-│   └── __pycache__/
-│
 ├── models/                   # Trained models
 │   └── checkpoint-100/       # Model checkpoint
 │
 └── src/                      # Source code
     ├── __init__.py
-    ├── fig.ipynb             # Visualization notebook
+    ├── fig.ipynb             # Report visualisation notebook
     ├── main.py               # Main application entry point
     ├── test.ipynb            # Testing notebook
     ├── TODO.md               # Project to-do list
     ├── __pycache__/
     │
-    ├── Data/                 # Data files
-    │   ├── gemini_test_4_predictions.txt
+    ├── Data/                 # Top level files (accessible by main.py)
+    │   ├── gemini_test_4_predictions.txt            # 4th and 5th iteration data
     │   ├── gemini_test_4.csv
     │   ├── gemini_test_5.csv
-    │   ├── HTC_equations.txt
+    │   ├── HTC_equations.txt                        # Saved IHTC paper MathML
     │   ├── HTC_gemini5_predictions.txt
-    │   └── p20.csv
+    │   └── p20.csv                                  # Reference data for IHTC
     │
-    ├── Docs/                 # Documentation
+    ├── Docs/                 # Papers
     │   ├── DOIs
     │   ├── Friction Modelling.pdf
     │   ├── HTC Paper.pdf
@@ -68,18 +65,43 @@ smart-scraper/
     │   └── ...
     │
     ├── Gemini/               # Google Gemini model integration
-    │   └── training_script.ipynb
+    │   ├── GeminiPredict.py
+    │   ├── training_script.ipynb
+    │   └── Data/             # Gemini testing data 
+    │       └── ...
     │
-    ├── Generation/           # Code generation
-    │   └── examples.ipynb
-    │
-    ├── paper_to_equation/    # Paper equation extraction
+    ├── Generation/           # Synthetic dataset generation
+    │   ├── Equation_BaseDataset.py
+    │   ├── Equation_BaseDataset_dev.ipynb
+    │   ├── examples.ipynb
+    │   └── Data/             # Synthetically generated data
+    │       └── ...
     │
     ├── Postprocessing/       # Post-processing tools
-    │   └── SOE_EquationGraph.py
+    │   ├── postprocessing_dev.ipynb
+    │   ├── SOE_EquationGraph.py
+    │   └── Data/             # Translated SymPy equations
+    │       └── ...
     │
     ├── Scraping/             # New scraper implementation
-    │   └── Scraper.py
+    │   ├── Scraper_dev.ipynb
+    │   ├── Scraper.py
+    │   └── Data/             # Scraped MathML equations
+    │       └── ...
     │
     └── T5/                   # T5 model integration
-        └── colab_training_script.ipynb
+    │   ├── tokenizer_training.ipynb
+    │   ├── training_script.ipynb
+    │   ├── translation_test.ipynb
+    │   ├── wandb_test1.py
+    │   ├── wandb_test2.py
+    │   ├── colab_training_script.ipynb
+    │   ├── Data/             # Scraped MathML equations
+    │   |   └── ...
+    │   ├── Model_Files/      # Trained model weights
+    │   |   └── ...
+    │   ├── Tokenizer_Files/  # Data for tokenizer training
+    │   |   └── ...
+    │   └── wandb/            # Logging files
+    │       └── ...
+```
